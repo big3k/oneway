@@ -1,0 +1,26 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta http-equiv="Content-Language" content="zh-cn">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link rel=stylesheet href="style.css" type ="text/css">
+<title></title>
+</head>
+<body  background="yenling/images/flower1.jpg">
+<table width="798" border="0" cellspacing="0"  cellpadding="0" align="center">
+<tr >
+<td width="798" valign="center" height=5></tr>
+<tr>
+<td><img src="image/tr.gif" width=200 height=40 border=0 alt=""></td>
+</tr>
+</table>
+
+<table  width="798" border="0" cellspacing="0"  cellpadding="0" align="center">
+<tr valign="top" >
+<td width="90  bgcolor="#E4F7F7">
+<p>&nbsp;<a href="s.html"><font  class="p3" >关于我</font></a>
+<p>&nbsp;<a href="n.html"><font class="p3" >读者文摘</font></a>
+<p>&nbsp;<a href="m.html"><font class="p3" >热门录像</font></a>
+<p>&nbsp;<a href="b.html"><font class="p3" >禁书下载</font></a>
+<p>&nbsp;<a href="f.html"><font class="p3" >我的珍藏</font></a>
+<p>&nbsp;<a href="a/1.htm"><font class="p3" >相片馆</font></a>
+<p>&nbsp;<a href="c.html"><font class="p3" >网站集锦</font><

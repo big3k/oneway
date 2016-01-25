@@ -1,0 +1,190 @@
+/*
+ *  $Id$
+ *  Program to capture PPTP traffic and wrap it with ipip 
+ *  Usage:  
+ *  ./ipip_pptp -i inf -d remote_end_of_tunnel (server IP)  
+ *   gcc -static -o ipip_pptp ipip_pptp.c -lpcap 
+ *
+ */
+
+#include <unistd.h>
+#include <pcap.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netinet/if_ether.h>
+#include <net/ethernet.h>
+#include <netinet/ip.h>
+#define MAXTEXT 1400
+#define __USE_BSD 1
+#define __BYTE_ORDER __LITTLE_ENDIAN
+
+// global variables 
+
+pcap_t* descr;
+int rawsocket=0;  
+
+unsigned short in_cksum(unsigned short *, int ); 
+
+/* packet processing callback */ 
+void my_callback(u_char *svr_ip, const struct pcap_pkthdr* pkthdr,
+                 const u_char* packet)
+{
+    struct ether_header *eth, *oeth; 
+    struct ip *iph, *oiph; 
+    u_char newpacket[2000];  /* new packet buffer */ 
+    struct sockaddr_in dstaddr;  
+  
+  memset(&dstaddr, 0, sizeof(dstaddr));   
+  dstaddr.sin_family = AF_INET;     /* Address family: Internet protocols */
+  dstaddr.sin_port = 0;       /* Leave it empty */
+  dstaddr.sin_addr.s_addr = (in_addr_t *) svr_ip;  /* Destination IP */
+
+ /* For readability, make variables for the sizes of each of the structures */
+  int size_ethernet = 14;  // sizeof(struct ether_header);
+  int size_ip = 20;  // sizeof(struct iphdr);
+  int i; 
+
+  memcpy(newpacket, packet, size_ethernet+size_ip); // ether + header 
+  memcpy(newpacket+size_ethernet+size_ip, packet+size_ethernet, 
+          pkthdr->len - size_ethernet); // payload starting from old ip header 
+  // now manipulate the new packet ethernet and ip header 
+  oeth = (struct ether_header *) packet; 
+  eth = (struct ether_header *) newpacket; 
+  oiph = (struct ip *)(packet + size_ethernet);
+  iph = (struct ip *)(newpacket + size_ethernet);
+
+  memcpy(eth->ether_dhost, oeth->ether_shost, ETH_ALEN); 
+  memcpy(eth->ether_shost, oeth->ether_dhost, ETH_ALEN); 
+  iph->ip_src.s_addr = oiph->ip_dst.s_addr; 
+  iph->ip_dst.s_addr = (in_addr_t *) svr_ip;  
+  iph->ip_p = IPPROTO_IPIP; 
+  iph->ip_sum = 0;   // checksum 
+  iph->ip_sum = in_cksum((unsigned short *)iph, sizeof(struct ip));
+
+  i = pcap_inject(descr, newpacket, pkthdr->len + size_ip); 
+  i = sendto(rawsocket, packet+size_ethernet, pkthdr->len - size_ethernet, 
+           0, (struct sockaddr *) &dstaddr, sizeof (dstaddr)); 
+
+  if ( i == -1 )  {
+       fprintf(stderr, "sending to %s failed!\n", inet_ntoa(iph->ip_dst));
+  } else  {
+       printf("bytes sent:  %ud\n", i); 
+         /**--- for debugging only   */
+       fprintf(stderr, "Src IP: %s ==>", inet_ntoa(iph->ip_src));
+       fprintf(stderr, "Dst IP: %s\n", inet_ntoa(iph->ip_dst));
+       fflush(stderr);
+  }
+   
+}  // end of callback
+
+
+int main(int argc, char *argv[])
+{
+    int n, i; 
+    int one=1; /* R.Stevens says we need this */ 
+
+    /* pcap variables */
+    char perrbuf[PCAP_ERRBUF_SIZE];
+    char dev[MAXTEXT];  /* default if */
+    u_long svr_ip;   // server ip 
+    char filter[] = "ip proto 47 or dst port 1723"; 
+    struct bpf_program fp;      /* hold compiled program     */
+    bpf_u_int32 maskp;          /* subnet mask               */
+    bpf_u_int32 netp;           /* ip                        */
+    void usage(char *);
+
+    while ((n = getopt(argc, argv, "i:d:")) != EOF)
+    {
+        switch (n)
+        {
+         case 'i':
+           strncpy(dev, optarg, MAXTEXT);  /* device */
+           break;
+         case 'd':
+           svr_ip = inet_addr(optarg);  /* server ip  */
+           break;
+         default:
+                usage(argv[0]);
+                exit(-1);
+        }
+    }
+
+    if ( (rawsocket = socket(AF_INET, SOCK_RAW, IPPROTO_IPIP)) < 0){
+        perror("main:socket()"); 
+        exit(-1);
+    }
+
+    //* Let kernel build the ip header 
+    if( setsockopt(rawsocket, IPPROTO_IP, 0, &one, sizeof(one)) < 0){
+        perror("main:setsockopt()"); 
+        exit(-1);
+   }
+ 
+    pcap_lookupnet(dev,&netp,&maskp,perrbuf);  
+
+    /* open device for reading in promiscuous mode */ 
+    descr = pcap_open_live(dev,BUFSIZ,1,-1,perrbuf);
+    if(descr == NULL)
+    { printf("pcap_open_live(): %s\n",perrbuf); exit(1); }
+
+    /* Lets try and compile the program.. non-optimized */
+    // sprintf(filter, "ip proto 47 %d and tcp[13] & 1 != 0", sport); /* only FIN */
+    /* printf("The filter is: %s\n", filter);  */
+    if(pcap_compile(descr,&fp,filter,0,netp) == -1)
+    { fprintf(stderr,"Error calling pcap_compile\n"); exit(1); }
+
+    /* set the compiled program as the filter */
+    if(pcap_setfilter(descr,&fp) == -1)
+    { fprintf(stderr,"Error setting filter\n"); exit(1); }
+
+    pcap_loop(descr,-1, my_callback, &svr_ip);
+    pcap_close(descr);
+    close(rawsocket); 
+
+    return (0);
+}
+
+void
+usage(char *name)
+{
+    printf("usage %s -i interface -d server_ip\n", name);
+}
+
+
+/* This piece of code has been used many times in a lot of differents tools. */
+/* I haven't been able to determine the author of the code but it looks like */
+/* this is a public domain implementation of the checksum algorithm */
+unsigned short in_cksum(unsigned short *addr,int len){
+    
+register int sum = 0;
+u_short answer = 0;
+register u_short *w = addr;
+register int nleft = len;
+    
+/*
+* Our algorithm is simple, using a 32-bit accumulator (sum),
+* we add sequential 16-bit words to it, and at the end, fold back 
+* all the carry bits from the top 16 bits into the lower 16 bits. 
+*/
+    
+while (nleft > 1) {
+sum += *w++;
+nleft -= 2;
+}
+
+/* mop up an odd byte, if necessary */
+if (nleft == 1) {
+*(u_char *)(&answer) = *(u_char *)w ;
+sum += answer;
+}
+
+/* add back carry outs from top 16 bits to low 16 bits */
+sum = (sum >> 16) + (sum &0xffff); /* add hi 16 to low 16 */
+sum += (sum >> 16); /* add carry */
+answer = ~sum; /* truncate to 16 bits */
+return(answer);
+
+} /* End of in_cksum() */
+
+

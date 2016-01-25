@@ -1,0 +1,18 @@
+4/7/08
+
+aggr2daily.F90: shows how to convert date/time into filenames with gmttime. 
+
+3/26/08
+
+1km2all-stdev.F90
+Compute the standard deviation of elevation data, based on 1km (1/100)
+elevation data. 
+
+
+
+Hi Yudong,
+
+I just spoke with Bart here and asked about the 1KM issue we discussed.  He suggested that we do still compute a stdev orography at 1KM from the GTOPO data.  We should use the 3x3 grid cells surrounding each cell to get the stdev.  Then in TESSEL, we can later decide whether to use this data or not, but for completion and consistency sake we should have one for each resolution.  Hope this makes sense...thanks!
+
+Joe 
+

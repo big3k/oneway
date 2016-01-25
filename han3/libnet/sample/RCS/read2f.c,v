@@ -1,0 +1,140 @@
+head	1.2;
+access;
+symbols;
+locks
+	yudong:1.2; strict;
+comment	@ * @;
+
+
+1.2
+date	2002.11.01.19.55.31;	author yudong;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2002.11.01.17.56.28;	author yudong;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@get rid of spaces, CRs
+@
+text
+@/*
+ *  $Id: read2f.c,v 1.1 2002/11/01 17:56:28 yudong Exp yudong $
+ *
+ *  Build a DNS type=any query packet
+ *
+ */
+
+#include <libnet.h>
+#define MAXLINES 10000
+
+int main(int argc, char *argv[])
+{
+
+    FILE *dmf, *nsf;  
+    char *dms[MAXLINES], *nss[MAXLINES]; 
+    char *dmfn = "dm.txt";
+    char *nsfn = "ns.txt";
+    char *tests ="\x77\x00\x77\x00";
+    int jd = 0; 
+    int jn = 0; 
+    int kd, kn; 
+    char lb[80]; 
+    char linebuf[80]; 
+
+    printf("%s %d\n", tests, strlen(tests)); 
+
+    if( (dmf = fopen(dmfn, "r")) == NULL) {
+      fprintf(stderr, "Error opening file %s \n", dmfn); 
+      exit(1);
+    } /* end if */ 
+	
+    if( (nsf = fopen(nsfn, "r")) == NULL) {
+      fprintf(stderr, "Error opening file %s \n", nsfn); 
+      exit(1);
+    } /* end if */ 
+	
+    printf("Reading domain names ...\n");
+    while ((jd < MAXLINES) && (fgets(lb, 80, dmf)!=0) )  {
+       kd = 0; 
+       kn = 0;
+       while (lb[kd] != '\0') {        /* get rid of space and CR */
+        if ((lb[kd] != ' ') && (lb[kd] != '\n')) {
+           linebuf[kn] = lb[kd];
+           kn++;
+        }  /* end if */
+        kd++; 
+       } /* end while */
+       linebuf[kn] = '\0'; 
+       if (kn != 0) { /* not empty line */ 
+         dms[jd] = (char *)malloc(strlen(linebuf)+1);  /* alloc mem */
+         strcpy(dms[jd++], linebuf); 
+         printf("%s-\n", dms[jd-1]);
+       } /* end if  */
+    } /* end while  */
+
+    printf("Total domains: %d\n", jd); 
+    fclose(dmf);
+   
+    printf("Reading resolver IPs ... \n");
+    while ((jn < MAXLINES) && (fgets(lb, 80, nsf)!=0) )  {
+       kd = 0; 
+       kn = 0;
+       while (lb[kd] != '\0') {        /* get rid of space and CR */
+        if ((lb[kd] != ' ') && (lb[kd] != '\n')) {
+           linebuf[kn] = lb[kd];
+           kn++;
+        }  /* end if */
+        kd++; 
+       } /* end while */
+       linebuf[kn] = '\0'; 
+       if (kn != 0) { /* not empty line */ 
+         nss[jn] = (char *)malloc(strlen(linebuf)+1); 
+         strcpy(nss[jn++], linebuf); 
+         printf("%s-\n", nss[jn-1]);
+       } /* end if */   
+    } /* end while  */
+   
+    printf("Total DNS IPs: %d\n", jn); 
+    fclose(nsf);
+    
+} /* end of main */
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 1
+ *  $Id: mytestudp.c,v 1.2 2002/11/01 04:39:27 yudong Exp yudong $
+d18 1
+d21 2
+d25 2
+d38 16
+a53 5
+    while ((jd < MAXLINES) && (fgets(linebuf, 80, dmf)!=0) )  {
+       /* allocate memory for dms */
+       dms[jd] = (char *)malloc(strlen(linebuf)+1); 
+       strcpy(dms[jd++], linebuf); 
+       printf("%s", dms[jd-1]);
+d56 1
+d60 16
+a75 5
+    while ((jn < MAXLINES) && (fgets(linebuf, 80, nsf)!=0) )  {
+       /* allocate memory for nss */
+       nss[jn] = (char *)malloc(strlen(linebuf)+1); 
+       strcpy(nss[jn++], linebuf); 
+       printf("%s", nss[jn-1]);
+d78 1
+@

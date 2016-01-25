@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title> LISW Sensor Web + Google Maps </title>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA7nTgR5tb7U5x1hnFEyUugxTNPwWC7RabJQ__cF4dPtxOW3I3uRTFgn5ImLRAiKcRfSQREsvoiWYnQQ"
+      type="text/javascript"></script>
+    <script type="text/javascript">
+
+
+    var map; 
+
+   var markers = new Array();  
+   var request = false;
+   var request2 = false;
+   try {
+     request = new XMLHttpRequest();
+     request2 = new XMLHttpRequest();
+   } catch (trymicrosoft) {
+     alert("This demo only works with Firefox for now!");
+     try {
+       request = new ActiveXObject("Msxml2.XMLHTTP");
+       request2 = new ActiveXObject("Msxml2.XMLHTTP");
+     } catch (othermicrosoft) {
+       try {
+         request = new ActiveXObject("Microsoft.XMLHTTP");
+         request2 = new ActiveXObject("Microsoft.XMLHTTP");
+       } catch (failed) {
+         request = false;
+         request2 = false;
+       }
+     }
+   }
+
+    function load() {
+      if (GBrowserIsCompatible()) {
+        map = new GMap2(document.getElementById("map"));
+        map.addControl(new GLargeMapControl());
+        map.addControl(new GMapTypeControl());
+        map.setCenter(new GLatLng(36.5, -97.5), 4);
+
+	GEvent.addListener(map, "click", function(marker, point) {
+	    //map.removeOverlay(marker);
+     	   lat= point.lat(); 
+           lon= point.lng(); 
+     	   //alert("X coords: " + lon + ", Y coords: " + lat);
+     	   var url = "/activemq-web-demo/message/LISW/SPS?type=topic&body=" + lat
+             + "|" + lon;
+     	   request2.open("POST", url, false);
+           request2.send(null);
+
+	});
+
+      }
+    }
+
+
+   function getSensorData() {
+     document.getElementById("click").setAttribute("disabled", "disabled");
+     var url = "/activemq-web-demo/message/LISW/SCS?timeout=1000";
+     request.open("GET", url, true);
+     request.onreadystatechange = updatePage;
+     request.send(null);
+   }
+
+   function updatePage() {
+     if (request.readyState == 4) {
+       if (request.status == 200) {
+         var colors = new Array(11);
+         var response = request.responseText.split("|");
+         var sid = response[0];
+         var lat = response[1]; 
+         var lon = response[2]; 
+         var data =parseInt( ( response[3] - 273) / 4.3 ); 
+         //var station = document.getElementById(sid);
+	 colors[0] = "http://192.239.84.155:18080/activemq-web-demo/images/iconb1.png"; 
+	 colors[1] = "http://192.239.84.155:18080/activemq-web-demo/images/iconb5.png";
+	 colors[2] = "http://192.239.84.155:18080/activemq-web-demo/images/iconb9.png";
+	 colors[3] = "http://192.239.84.155:18080/activemq-web-demo/images/icong13.png"; 
+	 colors[4] = "http://192.239.84.155:18080/activemq-web-demo/images/icong17.png"; 
+	 colors[5] = "http://192.239.84.155:18080/activemq-web-demo/images/iconr21.png"; 
+	 colors[6] = "http://192.239.84.155:18080/activemq-web-demo/images/iconr25.png"; 
+	 colors[7] = "http://192.239.84.155:18080/activemq-web-demo/images/iconr.png"; 
+	 if (markers[sid] == null ) {
+	    markers[sid] = new GMarker(new GLatLng(lat, lon), G_DEFAULT_ICON, true); 
+            map.addOverlay(markers[sid]); 
+	 } 
+         markers[sid].setImage(colors[data]); 
+         document.getElementById("print").value = sid + ": temp=" + response[3];
+
+         getSensorData();
+       } else if (request.status == 204) {
+         getSensorData();
+       } else
+         alert("Unexpected status code: " + request.status);
+     }
+
+   }
+
+</script>
+
+  </head>
+  <body onload="load()" onunload="GUnload()">
+<center>
+
+<h1>Land Information Sensor Web Demo</h1>
+
+<!--Welcome to LISW SOA/AJAX/REST Example -->
+</center>
+
+
+<p>Station report received:
+<input type="text" size="14" name="print" id="print" />
+</p>
+
+<div id="map" style="position: absolute; left:120px; top:180px; width:900px; height: 440px;  background: #DDDDDD;">
+</div>
+
+<div id="button" style="position: absolute; left:460px; top:670px; width:200px; height: 40px;  background: #FFFFFF">
+<input type="button" id="click" value="Start demo" onClick="getSensorData()" id="submit" />
+</div>
+
+  </body>
+</html>
+

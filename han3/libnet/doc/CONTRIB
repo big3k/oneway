@@ -1,0 +1,24 @@
+===============================================================================
+    $Id: CONTRIB,v 1.1.1.1 2002/08/05 22:26:04 route Exp $
+    LIBNET 1.1 (c) 1998 - 2002 Mike D. Schiffman <mike@infonexus.com>
+                               http://www.packetfactory.net/libnet
+===============================================================================
+
+
+    1.1.x CONTRIBUTERS
+
+    Beverly, Scott          <scottbeverly@xengin.com>
+    Bowman, Don             <don@sandvine.com>
+    Damron, Jason           <jsdamron@hushmail.com>
+        . bugfixes
+        . IP/TCP options bugfixes
+    Dulai, Danny            <ddulai@stake.com>
+    Newsham, Tim            <tnewsham@stake.com>
+        . general elitism
+    Raynal, Frédéric        <frederic.raynal@inria.fr>
+    Schlott, Stefan         <stefan@ploing.de>
+        . IPv6 code
+    Song, Doug              <dug@monkey.org>
+        . inspiration
+    Yardley, Tim            <liquid@dqc.org>
+EOF

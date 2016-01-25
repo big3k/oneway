@@ -1,0 +1,1 @@
+GET /minghui.html

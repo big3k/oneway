@@ -1,0 +1,14 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta http-equiv="Content-Language" content="zh-cn">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link rel=stylesheet href="style.css" type ="text/css">
+<title></title>
+</head>
+<body  background="yenling/images/flower1.jpg">
+<table width="798" border="0" cellspacing="0"  cellpadding="0" align="center">
+<tr >
+<td width="798" valign="center" height=5></tr>
+<tr>
+<td><img src="image/tr.gif" width=200 height=40 border=0 alt=""></td>
+</t

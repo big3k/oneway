@@ -1,0 +1,16 @@
+'open done-map.ctl' 
+'open blocks.ctl'
+
+'set mpdset hires'
+'set grads off'
+'set gxout shaded'
+'set dfile 1'
+'d var'
+'set dfile 2'
+'set ccolor 10'
+'set cthick 4'
+'set gxout grid'
+'d var' 
+'printim /tmp/test.gif gif'
+'quit'
+

@@ -1,0 +1,474 @@
+# Generated automatically from Makefile.in by configure.
+# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
+
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+# $Id: Makefile.in,v 1.1.1.1 2002/08/05 22:26:04 route Exp $
+#
+# Libnet automake information file
+# Copyright (c) 1998 - 2002 Mike D. Schiffman <mike@infonexus.com>
+# All rights reserved.
+#
+# Process this file with automake to produce a Makefile.in script.
+
+
+# $Id: Makefile.in,v 1.1.1.1 2002/08/05 22:26:04 route Exp $
+#
+# Libnet automake information file
+# Copyright (c) 1998 - 2002 Mike D. Schiffman <mike@infonexus.com>
+# All rights reserved.
+#
+
+
+SHELL = /bin/sh
+
+srcdir = .
+top_srcdir = ..
+prefix = /usr
+exec_prefix = ${prefix}
+
+bindir = ${exec_prefix}/bin
+sbindir = ${exec_prefix}/sbin
+libexecdir = ${exec_prefix}/libexec
+datadir = ${prefix}/share
+sysconfdir = ${prefix}/etc
+sharedstatedir = ${prefix}/com
+localstatedir = ${prefix}/var
+libdir = ${exec_prefix}/lib
+infodir = ${prefix}/info
+mandir = ${prefix}/man
+includedir = ${prefix}/include
+oldincludedir = /usr/include
+
+DESTDIR =
+
+pkgdatadir = $(datadir)/libnet
+pkglibdir = $(libdir)/libnet
+pkgincludedir = $(includedir)/libnet
+
+top_builddir = ..
+
+ACLOCAL = ${SHELL} /home/oneway/han3/libnet/missing --run aclocal
+AUTOCONF = ${SHELL} /home/oneway/han3/libnet/missing --run autoconf
+AUTOMAKE = ${SHELL} /home/oneway/han3/libnet/missing --run automake
+AUTOHEADER = ${SHELL} /home/oneway/han3/libnet/missing --run autoheader
+
+INSTALL = /usr/bin/install -c
+INSTALL_PROGRAM = ${INSTALL} $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = ${INSTALL} -m 644
+INSTALL_SCRIPT = ${INSTALL_PROGRAM}
+transform = s,x,x,
+
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+build_alias = x86_64-unknown-linux-gnu
+build_triplet = x86_64-unknown-linux-gnu
+host_alias = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
+target_alias = x86_64-unknown-linux-gnu
+target_triplet = x86_64-unknown-linux-gnu
+ADDITIONAL_LIBS = 
+AMTAR = ${SHELL} /home/oneway/han3/libnet/missing --run tar
+AWK = gawk
+CC = gcc
+DEPDIR = .deps
+ENDIANESS = LIBNET_LIL_ENDIAN
+EXEEXT = 
+HAVE_PACKET_SOCKET = 
+INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
+LIBNET_CONFIG_CFLAGS = 
+LIBNET_CONFIG_DEFINES = -D_BSD_SOURCE -D__BSD_SOURCE -D__FAVOR_BSD -DHAVE_NET_ETHERNET_H
+LIBNET_CONFIG_LIBS = 
+LIBNET_VERSION = 1.1.0
+LIBOBJS =  libnet_link_linux.o
+MAKEINFO = ${SHELL} /home/oneway/han3/libnet/missing --run makeinfo
+OBJEXT = o
+PACKAGE = libnet
+RANLIB = ranlib
+VERSION = 1.1.0
+am__include = include
+am__quote = 
+install_sh = /home/oneway/han3/libnet/install-sh
+
+AUTOMAKE_OPTIONS = foreign no-dependencies
+
+DISTCLEANFILES = *~
+
+noinst_PROGRAMS = arp cdp dhcp_discover get_addr icmp_timestamp icmp_unreach                   ieee isl ntp ospf_hello ospf_lsa ping_of_death stp synflood                   tcp1 tcp2 udp1 udp2 synflood6 icmp6_echoreq
+
+
+arp_SOURCES = arp.c
+cdp_SOURCES = cdp.c
+dhcp_discover_SOURCES = dhcp_discover.c
+get_addr_SOURCES = get_addr.c
+icmp_timestamp_SOURCES = icmp_timestamp.c
+icmp_unreach_SOURCES = icmp_unreach.c
+ieee_SOURCES = ieee.c
+isl_SOURCES = isl.c
+ntp_SOURCES = ntp.c
+ospf_hello_SOURCES = ospf_hello.c
+ospf_lsa_SOURCES = ospf_lsa.c
+ping_of_death_SOURCES = ping_of_death.c
+stp_SOURCES = stp.c
+synflood_SOURCES = synflood.c
+tcp1_SOURCES = tcp1.c
+tcp2_SOURCES = tcp2.c
+udp1_SOURCES = udp1.c
+udp2_SOURCES = udp2.c
+icmp6_echoreq_SOURCES = icmp6_echoreq.c
+synflood6_SOURCES = synflood6.c
+
+LDADD = $(top_srcdir)/src/libnet.a
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../include/config.h
+CONFIG_CLEAN_FILES = 
+PROGRAMS =  $(noinst_PROGRAMS)
+
+
+DEFS = -DHAVE_CONFIG_H -I. -I$(srcdir) -I../include
+CPPFLAGS = 
+LDFLAGS = 
+LIBS = 
+arp_OBJECTS =  arp.o
+arp_LDADD = $(LDADD)
+arp_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+arp_LDFLAGS = 
+cdp_OBJECTS =  cdp.o
+cdp_LDADD = $(LDADD)
+cdp_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+cdp_LDFLAGS = 
+dhcp_discover_OBJECTS =  dhcp_discover.o
+dhcp_discover_LDADD = $(LDADD)
+dhcp_discover_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+dhcp_discover_LDFLAGS = 
+get_addr_OBJECTS =  get_addr.o
+get_addr_LDADD = $(LDADD)
+get_addr_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+get_addr_LDFLAGS = 
+icmp_timestamp_OBJECTS =  icmp_timestamp.o
+icmp_timestamp_LDADD = $(LDADD)
+icmp_timestamp_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+icmp_timestamp_LDFLAGS = 
+icmp_unreach_OBJECTS =  icmp_unreach.o
+icmp_unreach_LDADD = $(LDADD)
+icmp_unreach_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+icmp_unreach_LDFLAGS = 
+ieee_OBJECTS =  ieee.o
+ieee_LDADD = $(LDADD)
+ieee_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+ieee_LDFLAGS = 
+isl_OBJECTS =  isl.o
+isl_LDADD = $(LDADD)
+isl_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+isl_LDFLAGS = 
+ntp_OBJECTS =  ntp.o
+ntp_LDADD = $(LDADD)
+ntp_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+ntp_LDFLAGS = 
+ospf_hello_OBJECTS =  ospf_hello.o
+ospf_hello_LDADD = $(LDADD)
+ospf_hello_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+ospf_hello_LDFLAGS = 
+ospf_lsa_OBJECTS =  ospf_lsa.o
+ospf_lsa_LDADD = $(LDADD)
+ospf_lsa_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+ospf_lsa_LDFLAGS = 
+ping_of_death_OBJECTS =  ping_of_death.o
+ping_of_death_LDADD = $(LDADD)
+ping_of_death_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+ping_of_death_LDFLAGS = 
+stp_OBJECTS =  stp.o
+stp_LDADD = $(LDADD)
+stp_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+stp_LDFLAGS = 
+synflood_OBJECTS =  synflood.o
+synflood_LDADD = $(LDADD)
+synflood_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+synflood_LDFLAGS = 
+tcp1_OBJECTS =  tcp1.o
+tcp1_LDADD = $(LDADD)
+tcp1_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+tcp1_LDFLAGS = 
+tcp2_OBJECTS =  tcp2.o
+tcp2_LDADD = $(LDADD)
+tcp2_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+tcp2_LDFLAGS = 
+udp1_OBJECTS =  udp1.o
+udp1_LDADD = $(LDADD)
+udp1_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+udp1_LDFLAGS = 
+udp2_OBJECTS =  udp2.o
+udp2_LDADD = $(LDADD)
+udp2_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+udp2_LDFLAGS = 
+synflood6_OBJECTS =  synflood6.o
+synflood6_LDADD = $(LDADD)
+synflood6_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+synflood6_LDFLAGS = 
+icmp6_echoreq_OBJECTS =  icmp6_echoreq.o
+icmp6_echoreq_LDADD = $(LDADD)
+icmp6_echoreq_DEPENDENCIES =  $(top_srcdir)/src/libnet.a
+icmp6_echoreq_LDFLAGS = 
+CFLAGS = -g -O2 -Wall
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = tar
+GZIP_ENV = --best
+SOURCES = $(arp_SOURCES) $(cdp_SOURCES) $(dhcp_discover_SOURCES) $(get_addr_SOURCES) $(icmp_timestamp_SOURCES) $(icmp_unreach_SOURCES) $(ieee_SOURCES) $(isl_SOURCES) $(ntp_SOURCES) $(ospf_hello_SOURCES) $(ospf_lsa_SOURCES) $(ping_of_death_SOURCES) $(stp_SOURCES) $(synflood_SOURCES) $(tcp1_SOURCES) $(tcp2_SOURCES) $(udp1_SOURCES) $(udp2_SOURCES) $(synflood6_SOURCES) $(icmp6_echoreq_SOURCES)
+OBJECTS = $(arp_OBJECTS) $(cdp_OBJECTS) $(dhcp_discover_OBJECTS) $(get_addr_OBJECTS) $(icmp_timestamp_OBJECTS) $(icmp_unreach_OBJECTS) $(ieee_OBJECTS) $(isl_OBJECTS) $(ntp_OBJECTS) $(ospf_hello_OBJECTS) $(ospf_lsa_OBJECTS) $(ping_of_death_OBJECTS) $(stp_OBJECTS) $(synflood_OBJECTS) $(tcp1_OBJECTS) $(tcp2_OBJECTS) $(udp1_OBJECTS) $(udp2_OBJECTS) $(synflood6_OBJECTS) $(icmp6_echoreq_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .o .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) $(top_srcdir)/Makefile.am.common
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign sample/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-noinstPROGRAMS:
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+
+distclean-noinstPROGRAMS:
+
+maintainer-clean-noinstPROGRAMS:
+
+.c.o:
+	$(COMPILE) -c $<
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+arp: $(arp_OBJECTS) $(arp_DEPENDENCIES)
+	@rm -f arp
+	$(LINK) $(arp_LDFLAGS) $(arp_OBJECTS) $(arp_LDADD) $(LIBS)
+
+cdp: $(cdp_OBJECTS) $(cdp_DEPENDENCIES)
+	@rm -f cdp
+	$(LINK) $(cdp_LDFLAGS) $(cdp_OBJECTS) $(cdp_LDADD) $(LIBS)
+
+dhcp_discover: $(dhcp_discover_OBJECTS) $(dhcp_discover_DEPENDENCIES)
+	@rm -f dhcp_discover
+	$(LINK) $(dhcp_discover_LDFLAGS) $(dhcp_discover_OBJECTS) $(dhcp_discover_LDADD) $(LIBS)
+
+get_addr: $(get_addr_OBJECTS) $(get_addr_DEPENDENCIES)
+	@rm -f get_addr
+	$(LINK) $(get_addr_LDFLAGS) $(get_addr_OBJECTS) $(get_addr_LDADD) $(LIBS)
+
+icmp_timestamp: $(icmp_timestamp_OBJECTS) $(icmp_timestamp_DEPENDENCIES)
+	@rm -f icmp_timestamp
+	$(LINK) $(icmp_timestamp_LDFLAGS) $(icmp_timestamp_OBJECTS) $(icmp_timestamp_LDADD) $(LIBS)
+
+icmp_unreach: $(icmp_unreach_OBJECTS) $(icmp_unreach_DEPENDENCIES)
+	@rm -f icmp_unreach
+	$(LINK) $(icmp_unreach_LDFLAGS) $(icmp_unreach_OBJECTS) $(icmp_unreach_LDADD) $(LIBS)
+
+ieee: $(ieee_OBJECTS) $(ieee_DEPENDENCIES)
+	@rm -f ieee
+	$(LINK) $(ieee_LDFLAGS) $(ieee_OBJECTS) $(ieee_LDADD) $(LIBS)
+
+isl: $(isl_OBJECTS) $(isl_DEPENDENCIES)
+	@rm -f isl
+	$(LINK) $(isl_LDFLAGS) $(isl_OBJECTS) $(isl_LDADD) $(LIBS)
+
+ntp: $(ntp_OBJECTS) $(ntp_DEPENDENCIES)
+	@rm -f ntp
+	$(LINK) $(ntp_LDFLAGS) $(ntp_OBJECTS) $(ntp_LDADD) $(LIBS)
+
+ospf_hello: $(ospf_hello_OBJECTS) $(ospf_hello_DEPENDENCIES)
+	@rm -f ospf_hello
+	$(LINK) $(ospf_hello_LDFLAGS) $(ospf_hello_OBJECTS) $(ospf_hello_LDADD) $(LIBS)
+
+ospf_lsa: $(ospf_lsa_OBJECTS) $(ospf_lsa_DEPENDENCIES)
+	@rm -f ospf_lsa
+	$(LINK) $(ospf_lsa_LDFLAGS) $(ospf_lsa_OBJECTS) $(ospf_lsa_LDADD) $(LIBS)
+
+ping_of_death: $(ping_of_death_OBJECTS) $(ping_of_death_DEPENDENCIES)
+	@rm -f ping_of_death
+	$(LINK) $(ping_of_death_LDFLAGS) $(ping_of_death_OBJECTS) $(ping_of_death_LDADD) $(LIBS)
+
+stp: $(stp_OBJECTS) $(stp_DEPENDENCIES)
+	@rm -f stp
+	$(LINK) $(stp_LDFLAGS) $(stp_OBJECTS) $(stp_LDADD) $(LIBS)
+
+synflood: $(synflood_OBJECTS) $(synflood_DEPENDENCIES)
+	@rm -f synflood
+	$(LINK) $(synflood_LDFLAGS) $(synflood_OBJECTS) $(synflood_LDADD) $(LIBS)
+
+tcp1: $(tcp1_OBJECTS) $(tcp1_DEPENDENCIES)
+	@rm -f tcp1
+	$(LINK) $(tcp1_LDFLAGS) $(tcp1_OBJECTS) $(tcp1_LDADD) $(LIBS)
+
+tcp2: $(tcp2_OBJECTS) $(tcp2_DEPENDENCIES)
+	@rm -f tcp2
+	$(LINK) $(tcp2_LDFLAGS) $(tcp2_OBJECTS) $(tcp2_LDADD) $(LIBS)
+
+udp1: $(udp1_OBJECTS) $(udp1_DEPENDENCIES)
+	@rm -f udp1
+	$(LINK) $(udp1_LDFLAGS) $(udp1_OBJECTS) $(udp1_LDADD) $(LIBS)
+
+udp2: $(udp2_OBJECTS) $(udp2_DEPENDENCIES)
+	@rm -f udp2
+	$(LINK) $(udp2_LDFLAGS) $(udp2_OBJECTS) $(udp2_LDADD) $(LIBS)
+
+synflood6: $(synflood6_OBJECTS) $(synflood6_DEPENDENCIES)
+	@rm -f synflood6
+	$(LINK) $(synflood6_LDFLAGS) $(synflood6_OBJECTS) $(synflood6_LDADD) $(LIBS)
+
+icmp6_echoreq: $(icmp6_echoreq_OBJECTS) $(icmp6_echoreq_DEPENDENCIES)
+	@rm -f icmp6_echoreq
+	$(LINK) $(icmp6_echoreq_LDFLAGS) $(icmp6_echoreq_OBJECTS) $(icmp6_echoreq_LDADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = sample
+
+distdir: $(DISTFILES)
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am:
+install-exec: install-exec-am
+
+install-data-am:
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am:
+uninstall: uninstall-am
+all-am: Makefile $(PROGRAMS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-noinstPROGRAMS mostlyclean-compile \
+		mostlyclean-tags mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-noinstPROGRAMS clean-compile clean-tags clean-generic \
+		mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-noinstPROGRAMS distclean-compile distclean-tags \
+		distclean-generic clean-am
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-noinstPROGRAMS \
+		maintainer-clean-compile maintainer-clean-tags \
+		maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: mostlyclean-noinstPROGRAMS distclean-noinstPROGRAMS \
+clean-noinstPROGRAMS maintainer-clean-noinstPROGRAMS \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile tags mostlyclean-tags distclean-tags \
+clean-tags maintainer-clean-tags distdir info-am info dvi-am dvi check \
+check-am installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:

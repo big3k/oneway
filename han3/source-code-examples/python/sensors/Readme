@@ -1,0 +1,20 @@
+5/23/07
+
+thread-http.py:
+  It branches off a thread to simulate sensors (sensor collection service), 
+which report data to activeMQ's topic: LISW.SCS. Any client subscribed to 
+this topic can get the sensor data from this URL:  
+
+http://192.239.84.155:18080/activemq-web-demo/message/LISW/SCS?timeout=10000&type=topic
+
+  This program also subscribes topc LISW.SPS to receive any notification
+regarding sensor planning service. A notification can be sent with this URL: 
+
+ wget -O tmp.out --post-data='' http://localhost:18080/activemq-web-demo/message/LISW/SPS?type=topic\&body=abc
+
+
+6/12/07
+
+thread-http.py is evolved into "scs-sps.py", which now supports
+two way interaction. The web frontwend is ~/webapp/lisw-demo.html.
+

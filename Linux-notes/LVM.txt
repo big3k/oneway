@@ -1,0 +1,73 @@
+1/28/2014
+
+
+  30  pvdisplay
+   31  df -h
+   32  lvdisplay
+   33  df -h
+   34  vgdisplay
+   35  vgscan
+   36  pvdisplay
+   37  lvgdisplay
+   38  vgdisplay
+   39  fdisk -l
+   40  fdisk -l /dev/sda
+   41  pvdisplay
+   42   pvscan
+   43  fdisk -l
+   44  vgscan
+   45  vgdisplay
+   46   vgscan
+   47  lvdisplay
+   48  vgdisplay
+   49  vgrename iRham2-LPxi-heJ6-4h9o-fMaJ-gPEH-YUCg0z vgold-server
+   50  vgdisplay
+   51  lvdisplay
+   52  mount /dev/vgold-server/LogVol00 /dev/sdb1
+   53  mount /dev/vgold-server/LogVol00 /tmp/sdb1
+   54  cd /tmp/sdb1
+   55  ls
+   56  cd /var/
+   57  ls
+   58  df -h
+   59  cd
+   60  umount /tmp/sdb1
+   61  df -h
+   62  mount /dev/vgold-server/LogVol00 /tmp/sdb1
+   63  ls /tmp/sdb1
+   64  df -h
+   65  umout /dev/sdb1
+   66  umount /dev/sdb1
+   67  umount /tmp/sdb1
+   68  df -h
+   69  cd /
+   70  ls
+   71  cd mnt
+   72  ls
+   73  lvdisplay
+   74  fdisk -l
+   75  fdisk -l /dev/vgold-server/LogVol01
+   76  df -h
+   77  cd
+   78  vgscan --mknodes
+   79  vgchange -ay
+   80  vgscan
+   81  ls /dev/mapper/vgold--server-LogVol0
+   82  mkdir /mnt/oldserver
+   83  mount /dev/mapper/vgold--server-LogVol00 /mnt/oldserver/
+   84  ls /mnt/oldserver/
+   85  df -h
+   86  umount /mnt/oldserver/
+   87  cd /
+   88  cd /mnt
+   89  ls
+   90  mv oldserver oldserver1
+   91  mkdir oldserver2
+   92  vgscan
+   93  pvdisplay
+   94  lvdisplay
+   95  mount /dev/mapper/vgold--server-LogVol00 /mnt/oldserver1
+   96  mount /dev/mapper/vgold--server-LogVol01 /mnt/oldserver2
+   97  cd /mnt/oldserver1
+
+

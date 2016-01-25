@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<om:Observation xmlns:gml="http://www.opengis.net/gml"
+  xmlns:om="http://www.opengis.net/om/1.0" 
+  xmlns:swe="http://www.opengis.net/swe/1.0.1"
+  xsi:schemaLocation="http://www.opengis.net/om/1.0 http://schemas.opengis.net/om/1.0.0/om.xsd"
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+      <gml:name>urn:CREW:observation:SoilMoist</gml:name>
+
+      <om:samplingTime>
+        <gml:TimePeriod>
+          <gml:beginPosition> 2008-08-21T12:21:13Z </gml:beginPosition>
+          <gml:endPosition> 2008-08-21T12:23:59Z </gml:endPosition>
+
+        </gml:TimePeriod>
+      </om:samplingTime>
+
+      <om:procedure xlink:href="urn:ogc:object:Sensor:MyOrg:12349"/>
+      <om:observedProperty xlink:href="urn:ogc:def:property:CREW:SoilMoist"/>
+      <om:featureOfInterest xlink:href="urn:ogc:def:feature:OGC-SWE:3:transient"/>
+
+      <om:result>
+        <swe:DataArray gml:id="SMArray">
+
+          <swe:elementCount>
+            <swe:Count>
+              <swe:value>5</swe:value>
+            </swe:Count>
+          </swe:elementCount>
+
+          <swe:elementType name="Components">
+            <swe:SimpleDataRecord gml:id="DataDefinition">
+
+              <swe:field name="time">
+                <swe:Time definition="urn:ogc:property:time:iso8601"/>
+              </swe:field>
+
+              <swe:field name="longitude">
+                <swe:Quantity definition="urn:ogc:property:location:EPSG:4326:longitude">
+                <swe:uom code="deg"/>
+                </swe:Quantity>
+              </swe:field>
+
+              <swe:field name="latitude">
+                <swe:Quantity definition="urn:ogc:property:location:EPSG:4326:latitude">
+                <swe:uom code="deg"/>
+                </swe:Quantity>
+              </swe:field>
+
+              <swe:field name="SoilMoist">
+                <swe:Quantity definition="urn:ogc:def:property:CREW:SoilMoist">
+                <swe:uom code=""/>
+
+                </swe:Quantity>
+              </swe:field>
+
+            </swe:SimpleDataRecord>
+          </swe:elementType>
+
+          <swe:encoding>
+            <swe:TextBlock tokenSeparator="," decimalSeparator="." blockSeparator="@@"/>
+          </swe:encoding>
+
+          <swe:values> 
+1 76 2002-10-29T03:00:00 OBS: soilmoist1: 1 3 -118.6250000 34.3750000 0.2660760@@2 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.8750000 30.8750000 0.1958516@@3 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.8750000 31.1250000 0.1960521@@4 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.8750000 31.3750000 0.1963579@@5 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.8750000 31.6250000 0.1976389@@6 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.8750000 31.8750000 0.1965372@@7 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.6250000 30.8750000 0.1961579@@8 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.6250000 31.1250000 0.1969299@@9 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.6250000 31.3750000 0.2009392@@10 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.6250000 31.6250000 0.2002586@@11 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.6250000 31.8750000 0.1973096@@12 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.3750000 30.8750000 0.1960829@@13 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.3750000 31.1250000 0.1972551@@14 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.3750000 31.3750000 0.2025385@@15 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.3750000 31.6250000 0.2017608@@16 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.3750000 31.8750000 0.2006120@@17 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.1250000 30.8750000 0.1968107@@18 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.1250000 31.1250000 0.1966519@@19 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.1250000 31.3750000 0.2027717@@20 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.1250000 31.6250000 0.2028142@@21 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -100.1250000 31.8750000 0.2026647@@22 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.8750000 30.8750000 0.1974625@@23 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.8750000 31.1250000 0.1971585@@24 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.8750000 31.3750000 0.2005368@@25 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.8750000 31.6250000 0.2012115@@26 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.8750000 31.8750000 0.2021788@@27 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.6250000 30.8750000 0.1973175@@28 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.6250000 31.1250000 0.1975281@@29 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.6250000 31.3750000 0.1979725@@30 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.6250000 31.6250000 0.1986059@@31 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.6250000 31.8750000 0.1985474@@32 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.3750000 30.8750000 0.1969645@@33 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.3750000 31.1250000 0.1974130@@34 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.3750000 31.3750000 0.1983233@@35 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.3750000 31.6250000 0.1993675@@36 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.3750000 31.8750000 0.2003040@@37 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.1250000 30.8750000 0.1935300@@38 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.1250000 31.1250000 0.1976060@@39 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.1250000 31.3750000 0.1987894@@40 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.1250000 31.6250000 0.2003624@@41 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -99.1250000 31.8750000 0.2018620@@42 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.8750000 30.8750000 0.1926274@@43 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.8750000 31.1250000 0.1978189@@44 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.8750000 31.3750000 0.1985177@@45 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.8750000 31.6250000 0.2001873@@46 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.8750000 31.8750000 0.2033560@@47 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.6250000 30.8750000 0.1946059@@48 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.6250000 31.1250000 0.1978780@@49 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.6250000 31.3750000 0.1987070@@50 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.6250000 31.6250000 0.2024458@@51 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.6250000 31.8750000 0.2025281@@52 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.3750000 30.8750000 0.1964545@@53 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.3750000 31.1250000 0.1993764@@54 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.3750000 31.3750000 0.2016623@@55 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.3750000 31.6250000 0.2025606@@56 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.3750000 31.8750000 0.1993412@@57 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.1250000 30.8750000 0.2015067@@58 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.1250000 31.1250000 0.2030748@@59 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.1250000 31.3750000 0.2033503@@60 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.1250000 31.6250000 0.2039999@@61 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -98.1250000 31.8750000 0.2031159@@62 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.8750000 30.8750000 0.2042111@@63 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.8750000 31.1250000 0.2041174@@64 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.8750000 31.3750000 0.2044932@@65 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.8750000 31.6250000 0.2050871@@66 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.8750000 31.8750000 0.2055045@@67 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.6250000 30.8750000 0.2163680@@68 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.6250000 31.1250000 0.2090746@@69 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.6250000 31.3750000 0.2087251@@70 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.6250000 31.6250000 0.2085814@@71 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.6250000 31.8750000 0.2084196@@72 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.3750000 30.8750000 0.2472150@@73 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.3750000 31.1250000 0.2347942@@74 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.3750000 31.3750000 0.2238894@@75 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.3750000 31.6250000 0.2241343@@76 76 2002-10-29T03:00:00 OBS: soilmoist1: 2 1 -97.3750000 31.8750000 0.2141979@@@@
+          </swe:values>
+
+        </swe:DataArray>
+      </om:result>
+    </om:Observation>
+
+
+

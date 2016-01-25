@@ -1,0 +1,147 @@
+<html>
+<head>
+<title>LISW AJAX Frontend Demo</title>
+<script language="javascript" type="text/javascript">
+
+   var request = false;
+   var request2 = false;
+   try {
+     request = new XMLHttpRequest();
+     request2 = new XMLHttpRequest();
+   } catch (trymicrosoft) {
+     alert("This demo only works with Firefox for now!"); 
+     try {
+       request = new ActiveXObject("Msxml2.XMLHTTP");
+       request2 = new ActiveXObject("Msxml2.XMLHTTP");
+     } catch (othermicrosoft) {
+       try {
+         request = new ActiveXObject("Microsoft.XMLHTTP");
+         request2 = new ActiveXObject("Microsoft.XMLHTTP");
+       } catch (failed) {
+         request = false;
+         request2 = false;
+       }  
+     }
+   }
+
+
+   function draw_box(event, type) {
+     x=event.layerX;
+     y=event.layerY;
+     h=72; 
+     w=62;
+     bxid=new Array(4); 
+     if (type == 0) { 
+       boxes=new Array("box1", "box2", "box3", "box4"); 
+       color="background: #FFFF00";
+       lw=1;
+     } else  {
+       boxes=new Array("boy1", "boy2", "boy3", "boy4"); 
+       color="background: #00FF00";
+       lw=2;
+     }
+     for (var i=0; i < boxes.length; i++) {
+       bxid[i] = document.getElementById(boxes[i]);
+       if ( bxid[i] == null ) {
+              bxid[i] = document.createElement("div");
+              bxid[i].setAttribute("id", boxes[i]);
+              document.getElementById("map").appendChild(bxid[i]);
+       }
+     }
+     bxid[0].setAttribute("style", "position:absolute;left:"+(x-w)+"px;top:"+(y-h)+"px;width:"+(w*2)+"px; height:"+lw+"px;"+color); 
+     bxid[1].setAttribute("style", "position:absolute;left:"+(x-w)+"px;top:"+(y-h)+"px;width:"+lw+"px; height:"+(h*2)+"px;"+color); 
+     bxid[2].setAttribute("style", "position:absolute;left:"+(x+w)+"px;top:"+(y-h)+"px;width:"+lw+"px;height:"+(h*2)+"px;"+color); 
+     bxid[3].setAttribute("style", "position:absolute;left:"+(x-w)+"px;top:"+(y+h)+"px;width:"+(w*2)+"px;height:"+lw+"px;"+color); 
+
+   }  // end function 
+
+
+   function new_latlon(event) {
+     x=event.layerX;
+     y=event.layerY;
+     // convert to lat/lon: (32, 8) -> (125W, 48N), (888,423)->(70W, 25N)
+     lat= 48 - 23 * (y - 8) / (423 - 8);  
+     lon= -125 + 55 * ( x - 32) / (888 -32); 
+     //alert("X coords: " + lon + ", Y coords: " + lat);
+     var url = "/activemq-web-demo/message/LISW/SPS?type=topic&body=" + lat
+      + "|" + lon;
+     request2.open("POST", url, false);
+     request2.send(null);
+     draw_box(event, 1);
+   }
+    
+
+   function getSensorData() {
+     document.getElementById("click").setAttribute("disabled", "disabled"); 
+     var url = "/activemq-web-demo/message/LISW/SCS?timeout=1000";
+     request.open("GET", url, true);
+     request.onreadystatechange = updatePage; 
+     request.send(null);
+   }
+
+   function updatePage() {
+     if (request.readyState == 4) {
+       if (request.status == 200) {
+	 var colors = new Array(11);
+         var map = document.getElementById("map"); 
+         var response = request.responseText.split("|");
+         var sid = response[0];
+         var lat = parseInt( (48 -  response[1] )/ 23 * 440 );
+         var lon = parseInt( (125 + 1 * response[2] )/ 55 * 880 );
+         var data = parseInt( (response[3] - 273) / 3 );
+	 var station = document.getElementById(sid); 
+         document.getElementById("print").value = sid + ": temp=" + response[3]; 
+	 colors[0] = "#0000FF"; colors[1] = "#3300CC"; 
+	 colors[2] = "#6600FF"; colors[3] = "#CC00FF"; 
+	 colors[4] = "#CC33CC"; colors[5] = "#FF00CC"; 
+	 colors[6] = "#FF0099"; colors[7] = "#FF0066"; 
+	 colors[8] = "#FF0033"; colors[9] = "#CC0033"; 
+	 colors[10] = "#FF0000"; 
+	 if (station == null ) {
+	    station = document.createElement("div"); 
+	    station.setAttribute("id", sid); 
+	    map.appendChild(station); 
+	 }
+	 //alert("sid:" + sid + "lon:" + lon + "lat:" + lat +" color: "+data); 
+	 station.setAttribute("style", "position: absolute; left: " + lon + "px; top: " + lat + "px; width: 10px; height: 10px; background: " + colors[data] );   
+
+         getSensorData();
+       } else if (request.status == 204) {
+         getSensorData();
+       } else 
+         alert("Unexpected status code: " + request.status); 
+     }
+
+   }
+
+</script>
+
+</head>
+<body>
+
+<center>
+<h1>Land Information Sensor Web Frontend AJAX/REST Demo</h1>
+
+<!--Welcome to LISW SOA/AJAX/REST Example -->
+</center>
+
+<p>Station report received: 
+<input type="text" size="14" name="print" id="print" />
+</p>
+
+<div id="map" style="position: absolute; left:120px; top:180px; width:900px; height: 440px;  background: #DDDDDD; background-image: url(katrina.gif)" onmousedown="new_latlon(event)" onmousemove="draw_box(event, 0)">
+
+<!-- examples
+  <div id="s1" style="position: absolute; left: 0px; top: 0px; width: 15px; height: 15px; background-color: #7F0000"></div> 
+
+  <div id="s2" style="position: absolute; left: 400px; top: 400px; width: 15px; height: 15px; background-color: #FFF000"></div> 
+-->
+
+</div> 
+
+<div id="button" style="position: absolute; left:460px; top:670px; width:200px; height: 40px;  background: #FFFFFF">
+<input type="button" id="click" value="Start demo" onClick="getSensorData()" id="submit" />
+</div>
+
+</body>
+</html>

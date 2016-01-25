@@ -1,0 +1,6 @@
+html-email.dat: html email with word attachment
+pdf-att.dat: html email with pdf attachment
+rtf-em.dat: rtf email with pdf attachment 
+plaintxt-pdf.dat: plaintext email with pdf attachment
+
+All emails were composed with ms outlook 

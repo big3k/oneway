@@ -1,0 +1,826 @@
+.\"
+.\" $Id: libnet.3,v 1.1.1.1 2002/08/05 22:26:03 route Exp $
+.\"
+.\" Copyright (c) 1998 - 2002 Mike D. Schiffman <mike@infonexus.com> 
+.\"
+.\"
+.TH LIBNET 3  "07 10 2002" "libnet 1.1.0" "Application Programmer's Manual"
+.SH NAME
+libnet \- Packet Shaping Library
+
+.ft B
+This manpage is work in progress and is far from done!
+.ft
+
+.SH DESCRIPTION
+.ft B
+Libnet
+.ft 
+provides a common high-level API for packet creation and packet injection
+across most current operating systems.  Like libpcap, 
+.ft B
+libnet
+.ft
+obscures the low-level network tedium and platform specificity from the
+applications programmer, allowing her to concentrate on the task at hand.
+It provides a wide range of functionality including a portable framework for
+low-level packet shaping, handling and injection.
+
+In order to make the magic happen, 
+.ft B
+libnet
+.ft 
+keeps state via a context handle that is initialized at the beginning of usage.
+This context holds all of the information relating to packet injection and
+allows
+.ft B
+libnet
+.ft
+to internalize much of tedium involved with building network packets including:
+
+.ti
+- \fBMemory alliocation for packet headers\fP
+.ti
+- \fBChecksums\fP
+.ti
+- \fBPacket header ordering\fP
+.ti
+- \fBAdditional sanity checking\fP
+
+An overview of the general usage of libnet is shown at the end of this manual
+page.
+
+.SH ADVANCED MODE
+.ft B
+Libnet
+.ft 
+also provides an advanced interface for users requiring additional control
+over the packet creation / injection process.  Since these routines require
+a fine touch and make it easier for an application programmer to break his
+programs, they can only be accessed when
+.ft B
+libnet
+.ft
+is initialized using the advanced mode (
+.ft B
+*_ADV
+.ft
+) injection primitives.  More detail on the advanced interface can be found
+later on.
+
+.SH SYNOPSIS
+.nf
+.ft B
+#include <libnet.h>
+.ft
+.LP
+
+.SH FRAMEWORK FUNCTIONS
+.nf
+.LP
+
+.ft B
+libnet_t *
+.ft
+libnet_init(int injection_type, char *device, char *err_buf);
+
+.ft B
+int
+.ft
+libnet_write(libnet_t *l);
+
+.ft B
+void
+.ft
+libnet_destroy(libnet_t *l);
+
+.SH ADDRESS RESOLUTION FUNCTIONS
+.nf
+
+.ft B
+u_char *
+.ft
+libnet_addr2name4(u_long in, u_short use_name);
+
+.ft B
+void
+.ft
+libnet_addr2name4_r(u_long in, u_short use_name, u_char *hostname);
+
+.ft B
+u_long
+.ft
+libnet_name2addr4(libnet_t *l, u_char *host_name, u_short use_name);
+
+.ft B
+u_char *
+.ft
+libnet_hex_aton(char *s, int *len);
+
+.ft B
+u_long
+.ft
+libnet_get_ipaddr(libnet_t *l);
+
+.ft B
+u_char *
+.ft
+libnet_addr2name6(u_long in, u_short use_name);
+
+.ft B
+void
+.ft
+libnet_addr2name6_r(struct libnet_in6_addr addr, u_short use_name,
+    u_char *hostname, int hostname_len);
+
+.ft B
+struct libnet_in6_addr
+.ft
+libnet_name2addr6(libnet_t *l, u_char *host_name, u_short use_name);
+
+.ft B
+u_long
+.ft
+libnet_get_ipaddr6(libnet_t *l);
+
+.ft B
+struct libnet_ether_addr *
+.ft
+libnet_get_hwaddr(libnet_t *l);
+
+
+.SH PACKET BUILDER FUNCTIONS
+.nf
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_802_1q(u_char *dst, u_char *src, u_short tpi,
+    u_char priority, u_char cfi, u_short vid, u_short len,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_802_2(u_char dsap, u_char ssap, u_char control,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_802_2snap(u_char dsap, u_char ssap, u_char control,
+    u_char *oui, u_short type, u_char *payload, u_long payload_s,
+    libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_802_3(u_char *dst, u_char *src, u_short length,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_arp(u_short hrd, u_short pro, u_short hln, u_short pln, 
+    u_short op, u_char *sha, u_char *spa, u_char *tha, u_char *tpa,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_bootpv4(u_char opcode, u_char htype, u_char hlen,
+    u_char hopcount, u_long xid, u_short secs, u_short unused,
+    u_long cip, u_long yip, u_long sip, u_long gip, u_char *payload,
+    u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_cdp(u_short sp, u_short dp, u_short sum, u_char *payload, 
+    u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_data(u_char *payload, u_long payload_s, libnet_t *l,
+    libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_dhcpv4(u_char opcode, u_char htype, u_char hlen,
+    u_char hopcount, u_long xid, u_short secs, u_short flags, u_long cip,
+    u_long yip, u_long sip, u_long gip, u_char *payload,
+    u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_dnsv4(u_short id, u_short flags, u_short num_q,
+    u_short num_anws_rr, u_short num_auth_rr, u_short num_addi_rr,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ethernet(u_char *dst, u_char *src, u_short type,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ethernet(u_char *dst, u_short type, libnet_t *l);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_icmpv4_echo(u_char type, u_char code, u_short sum,
+    u_short id, u_short seq, u_char *payload, u_long payload_s,
+    libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_icmpv4_mask(u_char type, u_char code, u_short sum,
+    u_short id, u_short seq, u_long mask, u_char *payload,
+    u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_icmpv4_timestamp(u_char type, u_char code, u_short sum,
+    u_short id, u_short seq, n_time otime, n_time rtime, n_time ttime,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_icmpv4_unreach(u_char type, u_char code, u_short sum,
+    u_short orig_len, u_char orig_tos, u_short orig_id,
+    u_short orig_frag, u_char orig_ttl, u_char orig_prot,
+    u_short orig_check, u_long orig_src, u_long orig_dst,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_icmpv4_timeexceed(u_char type, u_char code, u_short sum,
+    u_short orig_len, u_char orig_tos, u_short orig_id,
+    u_short orig_frag, u_char orig_ttl, u_char orig_prot,
+    u_short orig_check, u_long orig_src, u_long orig_dst,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_icmpv4_redirect(u_char type, u_char code, u_short sum,
+    u_long gateway, u_short orig_len, u_char orig_tos, u_short orig_id,
+    u_short orig_frag, u_char orig_ttl, u_char orig_prot,
+    u_short orig_check, u_long orig_src, u_long orig_dst,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ipsec_esp_hdr(u_long spi, u_long seq, u_long iv,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ipsec_esp_ftr(u_char len, u_char nxt_hdr, char *auth,
+     u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ipsec_ah(u_char nxt_hdr, u_char len, u_short res,
+    u_long spi, u_long seq, u_long auth, u_char *payload,
+    u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ipv4_options(u_char *options, u_long options_s,
+    libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ipv4(u_short len, u_char tos, u_short id, u_short frag,
+    u_char ttl, u_char prot, u_short sum, u_long src, u_long dst,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_autobuild_ipv4(u_short len, u_char prot, u_long dst, libnet_t *l);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ipv6(u_char tc, u_long fl, u_short len, u_char nh,
+    u_char hl, struct libnet_in6_addr src, struct libnet_in6_addr dst,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_autobuild_ipv6(u_short len, u_char nh, struct libnet_in6_addr dst,
+    libnet_t *l);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ntp(u_char leap_indicator, u_char version, u_char mode,
+    u_char stratum, u_char poll, u_char precision, u_short delay_int,
+    u_short delay_frac, u_short dispersion_int, u_short dispersion_frac,
+    u_long reference_id, u_long ref_ts_int, u_long ref_ts_frac,
+    u_long orig_ts_int, u_long orig_ts_frac, u_long rec_ts_int,
+    u_long rec_ts_frac, u_long xmt_ts_int, u_long xmt_ts_frac,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2(u_short len, u_char type, u_long rtr_id,
+    u_long area_id, u_short sum, u_short autype, u_char *payload,
+    u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_hello(u_long netmask, u_short interval, u_char opts,
+    u_char priority, u_int dead_int, u_long des_rtr, u_long bkup_rtr,
+    u_long neighbor, u_char *payload, u_long payload_s, libnet_t *l,
+    libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_dbd(u_short dgram_len, u_char opts, u_char type,
+    u_int seqnum, u_char *payload, u_long payload_s, libnet_t *l,
+    libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_lsr(u_int type, u_int lsid, u_long advrtr,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_lsu(u_int num, u_char *payload, u_long payload_s,
+    libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_lsa(u_short age, u_char opts, u_char type,
+    u_int lsid, u_long advrtr, u_int seqnum, u_short sum, u_short len,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_lsa_rtr(u_short flags, u_short num, u_int id,
+    u_int data, u_char type, u_char tos, u_short metric,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_lsa_net(u_long nmask, u_int rtrid, u_char *payload,
+    u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_lsa_sum(u_long nmask, u_int metric, u_int tos,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_ospfv2_lsa_as(u_long nmask, u_int metric, u_long fwdaddr,
+    u_int tag, u_char *payload, u_long payload_s, libnet_t *l, 
+    libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_rip(u_char cmd, u_char version, u_short rd, u_short af,
+    u_short rt, u_long addr, u_long mask, u_long next_hop, u_long metric,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_stp_conf(u_short id, u_char version, u_char bpdu_type,
+    u_char flags, u_char *root_id,  u_long root_pc, u_char *bridge_id, 
+    u_short port_id, u_short message_age, u_short max_age,
+    u_short hello_time, u_short f_delay, u_char *payload,
+    u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_stp_tcn(u_short id, u_char version, u_char bpdu_type,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_ptag_t
+libnet_build_tcp(u_short sp, u_short dp, u_long seq, u_long ack,
+    u_char control, u_short win, u_short sum, u_short urg, u_short len,
+    u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_tcp_options(u_char *options, u_long options_s, libnet_t *l,
+    libnet_ptag_t ptag);
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_udp(u_short sp, u_short dp, u_short len, u_short sum,
+     u_char *payload, u_long payload_s, libnet_t *l, libnet_ptag_t ptag)
+
+.ft B
+libnet_ptag_t
+.ft
+libnet_build_vrrp(u_char version, u_char type, u_char vrouter_id,
+    u_char priority, u_char ip_count, u_char auth_type,
+    u_char advert_int, u_short sum, u_char *payload, u_long payload_s, 
+    libnet_t *l,libnet_ptag_t ptag);
+
+
+.SH MISCELLANEOUS SUPPORT FUNCTIONS
+.nf
+
+.ft B
+int
+.ft
+libnet_seed_prand(libnet_t *l);
+
+.ft B
+u_long
+.ft
+libnet_get_prand(int type);
+
+.ft B
+int
+.ft
+libnet_plist_chain_new(libnet_t *l, libnet_plist_t **head,
+    char *tok_list);
+
+.ft B
+int
+.ft
+libnet_plist_chain_next_pair(libnet_plist_t *p, u_short *bport,
+    u_short *eport);
+
+.ft B
+int
+.ft
+libnet_plist_chain_dump(libnet_plist_t *p);
+
+.ft B
+u_char *
+.ft
+libnet_plist_chain_dump_string(libnet_plist_t *p);
+
+.ft B
+int
+.ft
+libnet_plist_chain_free(libnet_plist_t *p);
+
+.ft B
+void
+.ft
+libnet_stats(libnet_t *l, struct libnet_stats *ls);
+
+.ft B
+char *
+.ft
+libnet_geterror(libnet_t *l);
+
+.ft B
+int
+.ft
+libnet_getfd(libnet_t *l);
+
+.ft B
+char *
+.ft
+libnet_getdevice(libnet_t *l);
+
+.ft B
+u_char *
+.ft
+libnet_getpbuf(libnet_t *l, libnet_ptag_t ptag);
+
+.ft B
+u_long
+.ft
+libnet_getpbuf_size(libnet_t *l, libnet_ptag_t ptag);
+
+
+.SH ADVANCED FUNCTIONS
+.nf
+.ft B
+int
+.ft
+libnet_adv_cull_packet(libnet_t *l, u_char **packet, u_long *packet_s);
+
+.ft B
+int
+.ft
+libnet_adv_write_link(libnet_t *l, u_char *packet, u_long packet_s);
+
+.ft
+.fi
+
+.PP
+.SH FRAMEWORK FUNCTIONS DETAIL
+\fBlibnet_init()\fP kicks off the libnet lifecycle.  It initializes the library
+and gives the applications programmer a descriptor with which to build and
+inject packets into the network.  \fBinjection_type\fP is one of the following:
+
+.ti
+Constant        Meaning
+.ti
+\fBLIBNET_LINK\fP     Link-layer interface
+.ti
+\fBLIBNET_RAW4\fP     Raw sockets using IPv4
+.ti
+\fBLIBNET_RAW6\fP     Raw sockets using IPv6
+.ti
+\fBLIBNET_LINK_ADV\fP Link-layer interface (advanced)
+.ti
+\fBLIBNET_RAW4_ADV\fP Raw sockets using IPv4 (advanced)
+.ti
+\fBLIBNET_RAW6_ADV\fP Raw sockets using IPv6 (advanced)
+.ti
+
+\fBdevice\fP is either the canonical string referring to local network
+interface (i.e.: "eth0" or "fxp0") or NULL.  If device is \fBNULL\fP and the
+injection type is \fBLIBNET_LINK\fP, libnet will attempt to locate a device
+for the user at run time.  \fBerr_buf\fP is a char buffer of size
+\fBLIBNET_ERRBUF_SIZE\fP used to hold any error that might occur.  Upon
+success, the function returns an initialized libnet descriptor, \fBl\fP.  If
+it fails, \fBNULL\fP is returned, and \fBerr_buf\fP contains the reason.
+
+\fBlibnet_destroy()\fP is a deconstructor that tears down all memory
+structures associated with \fBl\fP.
+
+\fBlibnet_write()\fP writes the packet described in \fBl\fP to the network.
+If specified by the user, checksums will be performed.  Upon a successful
+write, the function returns the number of bytes written, on failure, it
+returns -1 and \fBlibnet_geterror()\fP can tell you the reason.
+
+.SH ADDRESS RESOLUTION FUNCTIONS DETAIL
+
+The following three functions use the following two symbolic constants:
+
+.ti
+Constant            Meaning
+.ti
+\fBLIBNET_RESOLVE\fP      Attempt to resolve the IP address
+.ti
+\fBLIBNET_DONT_RESOLVE\fP Don't (this is usually much faster)
+
+\fBlibnet_addr2name4()\fP converts the supplied network-ordered (big-endian)
+IPv4 address into its human-readable counterpart.  If \fBuse_name\fP is
+\fBLIBNET_RESOLVE\fP, \fBlibnet_addr2name4()\fP will attempt to resolve this
+IP address and return a hostname, otherwise (or if the lookup fails), the
+function returns a dotted-decimal ASCII string.  This function is hopelessly
+non re-entrant as it uses static data.  Users concerned with re-entrancy
+should use \fBlibnet_addr2name4_r()\fP.
+
+\fBlibnet_addr2name4_r()\fP is the (planned) reentrant version of the above
+function.  As soon as reentrant network resolver libraries become available
+this function will likewise be reentrant.  An additional argument of a buffer
+to store the converted (or resolved) IPv4 address is supplied by the user.
+
+\fBlibnet_name2addr4()\fP takes a NULL terminated ASCII string representation
+of an IPv4 address (dots and decimals or canonical hostname if use_name is
+\fBLIBNET_RESOLVE\fP) and converts it into a network-ordered (big-endian)
+4-byte value.  Note that on error this function returns -1, which is
+technically \fB255.255.255.255\fP.  I've never found this to be a problem in
+practice, but if you're concerned about it, use INET:inet_aton(3).
+
+\fBlibnet_get_ipaddr4()\fP returns the host-byte ordered IP address of the
+interface specified by the supplied libnet descriptor.  On error, it returns
+-1 (255.255.255.255) and \fBlibnet_geterror()\fP will contain the reason.
+
+\fBlibnet_get_hwaddr()\fP returns a pointer to an libnet_ether_addr structure
+filled in with the MAC address of the interface specified by the libnet
+descriptor.  On error it returns \fBNULL\fP and \fBlibnet_geterror()\fP will
+contain the reason.
+
+.SH PACKET BUILDER FUNCTIONS DETAIL
+The following functions construct packet headers and data.  Generally
+speaking, these functions should be called "protocol unit" builder functions,
+as they really build generic data units that just so happen to be network
+protocol headers.  Every packet building function takes a series of arguments
+more or less corresponding exactly to their header values.  This is intuitive,
+but often makes for a functions with huge prototypes and large stack frames.
+One \fBvery important\fP thing to note is that these functions \fBmust\fP be
+called in order when constructing a given packet.  In other words, to build
+an NTP packet at, the link-layer, you would first call
+\fBlibnet_build_ntp()\fP, then \fBlibnet_build_udp()\fP, then
+\fBlibnet_build_ipv4()\fP, then \fBlibnet_build_ethernet()\fP.  This
+is essential for your packet to be linked together properly internally by
+libnet.
+
+All packet builder functions take the same final four arguments:
+
+.ti
+Argument      Data-Type           Optional? (may be zero or NULL)
+.ti
+\fBpayload\fP       u_char *            Yes
+.ti
+\fBpayload_s\fP     u_long              Yes
+.ti
+\fBl\fP             libnet_t            No
+.ti
+\fBt\fP             libnet_ptag_t       No
+
+And all packet builder functions return the same type, \fBlibnet_ptag_t\fP.
+
+The payload interface can be used for several purposes including additional
+protcol information for protocol headers that either do not have a defined
+interface to tack on additional data after the static header, or to specify
+arbitrary data to a protocol header or to build a whole other protocol (say
+after IP).  This interface should not be used if libnet has a builder for the
+protocol in question, unless it comes up lacking for some reason.  The libnet
+descriptor \fBl\fP is required.  The final argument, \fBt\fP is used to
+specify a protocol tag.  If this value is non-zero
+the build function in question will attempt to locate this already created
+protocol header and modify it rather than creating a new one.  This
+functionality is used when you want to modify a packet header repeatedly
+inside of a loop.  The pseudo code looks like this:
+
+.ti
+libnet_ptag_t ip_tag;
+libnet_ptag_t tcp_tag;
+
+for (tcp_tag = ip_tag = LIBNET_PTAG_INITIALIZER ; condition; )
+.ti
+{
+    ...
+    tcp_tag = libnet_build_tcp(..., tcp_tag);
+    ip_tag = libnet_build_ip(..., ip_tag);
+    ...
+.ti
+}
+.ti
+
+Both ptags will be initialized to 0, upon entering the build function which causes
+the function to build a new header.  The next time it descends into the loop,
+it will be set to the id of that protocol header it created and the build
+function will \fBnot create\fP a new block, it will \fBmodify\fP the old one.
+
+\fBlibnet_build_arp()\fP constructs an ARP (Address Resolution Protocol) packet.
+
+.ti
+Packet header sizes
+.ti
+LIBNET_ARP_H                0x08 bytes
+.ti
+LIBNET_ARP_ETH_IP_H         0x1c bytes
+
+.ti
+Arguments
+.ti
+...Hey someone should write this!  Or read Mike's new book!...
+
+
+.SH USAGE OVERVIEW
+
+The general usage paradigm of
+.ft B
+libnet
+.ft
+is as follows:
+
+.ft B
+    libnet_t *l;
+    l = libnet_init(INJECTION_TYPE, PROTOCOL, DEVICE,
+            ERRBUF);
+.ft 
+    where:
+
+.ft B
+    INJECTION_TYPE 
+.ft
+= LIBNET_RAW4 (ipv4 raw socket)
+                     LIBNET_RAW6 (ipv6 raw socket)
+                     LIBNET_LINK (link-layer socket)
+                     LIBNET_RAW4_ADV (advanced mode)
+                     LIBNET_RAW6_ADV (advanced mode)
+                     LIBNET_LINK_ADV (advanced mode)
+ 
+.ft B
+    PROTOCOL 
+.ft
+= IP protocol to be used for the raw socket.
+                This is ignored for the link-layer, and
+                almost always IPPROTO_RAW for ipv4.
+.ft B
+    DEVICE
+.ft
+= The canoical name of the device, used mainly
+              with the link layer stuff.  For an ipv4 or
+              ipv6 raw socket, you can leave this NULL
+              (although libnet will try to look one up
+              in case it needs one later).  If it's NULL
+              with the link-layer, libnet will try to
+              find a suitable device or bail.
+.ft B
+    ERRBUF
+.ft
+= Until we have our libnet context l, this is
+             where errors will be.
+    
+Inside of this newly created context we have a ton of stuff including a
+file descrisptor for the packet device the injection type, the device name
+(if applicable) a pointer to the libnet protocol block structure and some
+other ancillary data.
+ 
+Additionally, we will soon be supporting context manipulation functions
+that will allow the user to set certain flags inside the context.  This
+interface will be akin to 
+.ft B
+libnet_toggle_checksum()
+.ft
+for those of you who care.
+
+When a packet is first constructed, the protocol block (pblock) stuff comes
+into play.  On the outside, to an applications programmer, a packet is
+constructed more or less like normal (with a few notable exceptions):
+
+.ft B
+    libnet_ptag_t ip_tag;
+.ft
+    ip_tag = libnet_build_ipv4(
+                LIBNET_UDP_H,
+                0,
+                242,
+                0,
+                64,
+                IPPROTO_UDP,
+                0,              /* NEW: checksum */
+                src_ip,
+                dst_ip,
+                NULL,
+                0,
+                l,              /* NEW: libnet context */
+                0);             /* NEW: libnet ptag */
+
+
+The checksum allows an applications programmer to decide if he wants to
+specify his own random value (useful in NIDS fooling) or precompute the
+sum elsewhere, or leave it zero and by default libnet will take care of it
+(although this is overridable).  The libnet context is the opague
+pointer we allocated earlier and will show up in just about every libnet
+function call from here on out.  The libnet ptag is a way to reference an
+ALREADY BUILT protocol block.  This is necessary if you want to change 
+some values of a header inside of a packet injection loop.
+ 
+So, when you call a build function, internally, it's a completely new
+system.  If the item you're constructing is NEW, a new pblock will be
+allocated and linked onto the end of the list.  It may be helpful to think
+of this as a "protocol stack" because you MUST build your packets IN 
+ORDER, from the low end of the protocol stack on up (i.e.: ethernet -> 
+ip -> tcp).  Once you build a new protocol block, it's "pushed down on the
+stack" and you move on to the next.  However, this analogy breaks down 
+because you can modify any one of these items and when they're assembled
+for the final packet, libnet starts at the head of the list.  It may be
+MORE helpful to think of the pblock chain as a doubly linked FIFO 
+queue, because that's what it is. :)
+
+
+.SH SEE ALSO
+pcap(3), bpf(4), dlpi(7P), packet(7)
+.SH AUTHOR
+Mike D. Schiffman <mike@infonexus.com>
+See the accompanying documentation for additional contributers
+.LP
+The current version is always available:
+.LP
+.RS
+.I http://www.packetfactory.net/libnet
+.RE
+.SH BUGS
+Raw sockets are cooked across many platforms.  See the accompanying
+documentation on raw sockets.
+
+Some versions of *bsd will not allow the user to specify an arbitrary source
+MAC address.
+
+Please send bug reports to mike@infonexus.com.

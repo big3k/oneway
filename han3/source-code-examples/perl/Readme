@@ -1,0 +1,10 @@
+3/28/08
+
+socialcalccgi.pl: 
+
+Original version: /var/www/html/socialCalc/bin/socialcalccgi.pl
+
+Changes: 
+
+Use sqmail session for authentication. 
+

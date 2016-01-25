@@ -1,0 +1,26 @@
+
+nowait: A TIME_WAIT state killer
+=================================
+5/8/2003
+ 
+This program kills TIME_WAIT states on busy servers which
+perform active close on tcp connections. 
+
+How it works: 
+  It sniffs for the "FIN" packet coming from the clients,
+and once it sees a "FIN" packet, it sends an "ACK" to the 
+client. This ACK usually arrives later than the server's 
+"ACK" as the response to the client's "FIN". Therefore this
+artificial "ACK" will induce a "RST" from the client to the 
+server. Once the server receives the "RST", it will get out 
+of the TIME_WAIT state and releases the resources. 
+
+Usage: 
+ ./nowait -i interface -p server_port
+ Example: to handle a http server with a network interface eth0:
+  ./nowait -i eth0 -p 80 &
+
+References:
+
+1. http://www.globecom.net/ietf/draft/draft-faber-time-wait-avoidance-00.html
+ 

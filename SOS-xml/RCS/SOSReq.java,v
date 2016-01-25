@@ -1,0 +1,242 @@
+head	1.2;
+access;
+symbols;
+locks
+	yudong:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2009.07.22.20.45.07;	author yudong;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2008.08.28.20.02.27;	author yudong;	state Exp;
+branches;
+next	;
+
+
+desc
+@Working in general
+@
+
+
+1.2
+log
+@Now it can parse out the data in <values> element with StAX API.
+@
+text
+@
+// Parse XML using StAX
+import javax.xml.stream.*;
+import javax.xml.stream.events.*;
+import javax.xml.stream.XMLInputFactory;
+import java.io.*;
+import java.util.*;
+import java.text.*;
+
+import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.methods.*;
+
+public class SOSReq {
+ public static void main( String[] args ) {
+   if (args.length != 2 ) {
+     System.err.println("Usage: java SOSReq time outfile\r\nExample: java SOSReq 2006-10-30T03:00:00Z /tmp/sm.dat\r\n"); 
+     System.exit(-1); 
+   } 
+   String url = "http://192.239.84.150:18080/LISW/SOS";
+   String xmldata =
+	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+	"<sos:GetObservation xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n" +
+ 	"  xsi:schemaLocation=\"http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosAll.xsd\"\r\n" +
+ 	"  xmlns:sos=\"http://www.opengis.net/sos/1.0\"\r\n" +
+ 	"  xmlns:om=\"http://www.opengis.net/om/1.0\"\r\n" +
+ 	"  xmlns:ogc=\"http://www.opengis.net/ogc\"\r\n" +
+ 	"  xmlns:gml=\"http://www.opengis.net/gml\"\r\n" +
+ 	"  service=\"SOS\" version=\"1.0.0\" srsName=\"urn:ogc:def:crs:EPSG:4326\"> \r\n" +
+	"<sos:offering>LISv5</sos:offering>\r\n" +
+	"<sos:eventTime>\r\n" +
+  	"  <ogc:TM_During>\r\n" +
+    	"    <ogc:PropertyName>om:samplingTime</ogc:PropertyName>\r\n" +
+    	"    <gml:TimePeriod>\r\n" +
+       	"      <gml:beginPosition>"+ args[0] + "</gml:beginPosition>\r\n" +
+       	"      <gml:endPosition>" + args[0] + "</gml:endPosition>\r\n" +
+    	"    </gml:TimePeriod>\r\n" +
+  	"  </ogc:TM_During>\r\n" +
+	"</sos:eventTime>\r\n" +
+	"<sos:observedProperty>urn:ogc:def:property:CREW:SoilMoist</sos:observedProperty>\r\n" +
+	"<sos:featureOfInterest>\r\n" +
+	"  <ogc:BBOX>\r\n" +
+        "    <ogc:PropertyName>gml:location</ogc:PropertyName>\r\n" +
+        "      <gml:Envelope srsName=\"urn:ogc:def:crs:EPSG:4326\">\r\n" +
+        "        <gml:lowerCorner>25.875 -124.875</gml:lowerCorner>\r\n" +
+        "        <gml:upperCorner>52.875 -67.875</gml:upperCorner>\r\n" +
+        "      </gml:Envelope>\r\n" +
+        "    </ogc:BBOX>\r\n" +
+	"</sos:featureOfInterest>\r\n" +
+	"<sos:responseFormat>text/xml;subtype=&quot;om/1.0.0&quot;</sos:responseFormat>\r\n" +
+	"<sos:resultModel>om:Observation</sos:resultModel>\r\n" +
+	"<sos:responseMode>inline</sos:responseMode>\r\n" +
+	"</sos:GetObservation>\r\n"; 
+
+
+   try {
+    HttpClient client = new HttpClient();
+    PostMethod method = new PostMethod( url );
+
+    System.out.println("-------------------Request-----------------\r\n");
+    System.out.println(xmldata);
+
+    method.setRequestBody(xmldata);
+
+	 // Execute the POST method
+    int statusCode = client.executeMethod( method );
+    if( statusCode != -1 ) {
+//      String contents = method.getResponseBodyAsString();
+      System.out.println("-------------------Response-----------------\r\n");
+//      System.out.println( contents );
+      InputStream xmlresp; 
+      xmlresp = method.getResponseBodyAsStream();
+      parseXML(xmlresp); 
+      
+      method.releaseConnection();
+//      getData(args[0], args[1]);   // short-circuit for now YDT
+    }
+   } catch( Exception e ) {
+    e.printStackTrace();
+   }
+
+ } //main 
+
+ public static void parseXML(InputStream xml) { 
+ try {
+   XMLInputFactory inputFactory=XMLInputFactory.newInstance();
+   XMLEventReader xmlEventReader=inputFactory.createXMLEventReader(xml);
+
+   while(xmlEventReader.hasNext()){
+
+      XMLEvent xmlEvent = xmlEventReader.nextEvent();
+            if (xmlEvent.isStartElement()){
+                if(xmlEvent.asStartElement().getName().getLocalPart() == ("values") ) { 
+                  xmlEvent = xmlEventReader.nextEvent();
+                  System.out.println("Element data: " + 
+                      xmlEvent.asCharacters().getData() + " ");
+                      continue; 
+                 }
+             }
+
+   }
+
+   xmlEventReader.close(); 
+
+ } catch(FactoryConfigurationError e) {
+   System.out.println("FactoryConfigurationError"+e.getMessage());
+ } catch(XMLStreamException e) {
+   System.out.println("XMLStreamException"+e.getMessage());
+ } //try
+
+
+ }  //mehtod 
+
+
+ public static void getData(String dtime, String outfile) {
+  try {
+   String fpath="/home/hongbo/src/MPI_LIS/LIS5.0BETA_2008_Feb_Su/OUT/LISW/EXPclm/CLM/"; 
+   DateFormat dfm = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+   Date ddate = dfm.parse(dtime); 
+   System.out.println("Result: " + dfm.format(ddate));  
+   dfm = new SimpleDateFormat("yyyy'/'yyyyMMdd'/'yyyyMMddHHmm'.d01.gs4r'");
+   System.out.println("Result2: " + fpath + dfm.format(ddate));  
+   
+   RandomAccessFile infile = new RandomAccessFile(fpath + dfm.format(ddate), "r"); 
+   int reclen= 229*109*4 + 8;  //fortran seq access
+   byte[] data = new byte[reclen]; 
+   // SoilMoist1 is 24th record 
+   infile.seek( reclen * 23 ); 
+   infile.read(data); 
+   infile.close(); 
+
+   RandomAccessFile outf = new RandomAccessFile(outfile, "rw"); 
+   outf.write(data); 
+   outf.close(); 
+  
+  } catch( Exception e ) {
+    e.printStackTrace();
+  }
+
+
+ }  //mehtod
+
+
+
+
+}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+d7 2
+d15 4
+d21 33
+a53 12
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+        "<sos:GetObservation xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n" +
+        "  xsi:schemaLocation=\"http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosAll.xsd\"\r\n" +
+        "  xmlns:sos=\"http://www.opengis.net/sos/1.0\"\r\n" +
+        "  xmlns:om=\"http://www.opengis.net/om/1.0\"\r\n" +
+        "  service=\"SOS\" version=\"1.0.0\" srsName=\"EPSG:4326\">\r\n" +
+        "<sos:offering>urn:CREW:offering:LISW</sos:offering>\r\n" +
+        "<sos:observedProperty>urn:ogc:def:property:CREW:SoilMoist</sos:observedProperty>\r\n" +
+        "<sos:responseFormat>text/xml; subtype=&quot;om/1.0.0&quot;</sos:responseFormat>\r\n" +
+        "<sos:resultModel>om:Observation</sos:resultModel>\r\n" +
+        "<sos:responseMode>inline</sos:responseMode>\r\n" +
+        "</sos:GetObservation>\r\n";
+d67 3
+a69 3
+      //String contents = method.getResponseBodyAsString();
+      //System.out.println("-------------------Response-----------------\r\n");
+      //System.out.println( contents );
+d75 1
+d86 1
+a86 1
+   XMLStreamReader xmlStreamReader=inputFactory.createXMLStreamReader(xml);
+d88 1
+a88 2
+   while(xmlStreamReader.hasNext()){
+     int event=xmlStreamReader.next();
+d90 9
+a98 5
+     if(event==XMLStreamConstants.START_DOCUMENT){
+       System.out.println("Event Type:START_DOCUMENT");
+       System.out.println("Document Encoding:"+xmlStreamReader.getEncoding());
+       System.out.println("XML Version:"+xmlStreamReader.getVersion());
+     }
+d100 1
+a100 8
+     if(event==XMLStreamConstants.START_ELEMENT){
+       System.out.println("Event Type: START_ELEMENT");
+
+       System.out.println("Element Prefix:"+xmlStreamReader.getPrefix());
+       System.out.println("Element Local Name:"+xmlStreamReader.getLocalName());
+       System.out.println("Namespace URI:"+xmlStreamReader.getNamespaceURI());
+
+       for(int i=0; i<xmlStreamReader.getAttributeCount();i++){
+d102 1
+a102 9
+           System.out.println("Attribute Prefix:"+xmlStreamReader.getAttributePrefix(i));
+           System.out.println("Attribute Namespace:"+xmlStreamReader.getAttributeNamespace(i));
+           System.out.println("Attribute Local Name:"+xmlStreamReader.getAttributeLocalName(i));
+           System.out.println("Attribute Value:"+xmlStreamReader.getAttributeValue(i));
+       }  //for
+
+     } // end if 
+
+   } //while 
+d112 33
+@

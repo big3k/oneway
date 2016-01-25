@@ -1,0 +1,118 @@
+head	1.2;
+access;
+symbols;
+locks
+	bbuser:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2004.06.01.15.05.20;	author bbuser;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2004.03.10.21.36.19;	author bbuser;	state Exp;
+branches;
+next	;
+
+
+desc
+@swapped the position of form and image. Added var name to image file name to control caching.
+@
+
+
+1.2
+log
+@Use farmer.conf file to get the data dir automatically.
+@
+text
+@#!/usr/bin/perl -w
+# $Id: call-nodeplot.pl,v 1.1 2004/03/10 21:36:19 bbuser Exp bbuser $ 
+# CGI to invoke nodeplot.pl, after getting host, ic, and ir 
+
+use CGI qw(:standard); 
+
+require '/data1/pool/control/getconf.pl';
+
+my %conf = ();
+&getconf (\%conf);
+
+$host = param("host"); 
+$ic = param("ic"); 
+$ir = param("ir"); 
+$var = param("var"); 
+#sanity check
+$host =~ s/\W//g; 
+$ic =~ s/\D//g;
+$ir =~ s/\D//g;
+$var =~ s/\W//g; 
+
+$inputfile = 
+  "/data/OUT1KM$ic-$ir/$conf{exp}/$conf{lsm}/2001/20010611/2001061121$var.gd4r"; 
+#VIC  "/data/OUT1KM$ic-$ir/EXP999/VIC/2001/20010611/LDAS.EXP999.2001061121$var.VICbin"; 
+$imglink = "/pool/nodeplot/$ic-$ir-$var.gif";  # used for html
+$imgfile = "/data2/nodeplot/$ic-$ir-$var.gif"; 
+`ssh -4 $host -l lis "/data1/bin/nodeplot.pl $ic $ir $var $inputfile $imgfile"`; 
+
+print <<HTMLHEADER;
+Content-type: text/html
+Expires: Thu, 29 Oct 1998 17:04:19 GMT
+
+
+<html>
+<head>
+<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<title>OUTPUT</title>
+</head>
+<body>
+<form method="post" action="/cgi-bin/pool/call-nodeplot.pl">
+<input type="hidden" name="host" value="$host">
+<input type="hidden" name="ic" value="$ic">
+<input type="hidden" name="ir" value="$ir">
+<b>Choose another variable: </b>
+<select name="var">
+<option value="qh">Qh
+<option value="qle">Qle
+<option value="qg">Qg
+<option value="qs">Qs
+<option value="lwnet">LWnet
+<option value="swnet">SWnet
+<option value="avgsurft">AvgSurfT
+</select>
+<input type="submit" value="Plot">
+</form>
+<img src="$imglink">
+</body></html>
+
+HTMLHEADER
+
+
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 1
+# $Id$ 
+d7 5
+d23 2
+a24 2
+  "/data/OUT1KM$ic-$ir/EXP999/VIC/2001/20010611/LDAS.EXP999.2001061121$var.VICbin"; 
+#CLM  "/data/OUT1KM$ic-$ir/EXP999/CLM2/2001/20010611/LIS.E999.2001061121$var.CLM2gbin"; 
+d48 7
+a54 7
+<option value="Qh">Qh
+<option value="Qle">Qle
+<option value="Qg">Qg
+<option value="Qs">Qs
+<option value="LWnet">LWnet
+<option value="SWnet">SWnet
+<option value="AvgSurfT">AvgSurfT
+@

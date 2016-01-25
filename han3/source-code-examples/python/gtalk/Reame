@@ -1,0 +1,6 @@
+3/29/2008
+
+dtw-bot.py is updated to new-dtw-bot.py: 
+
+limits the frequency to respond to requests from the same userid. 
+Requests within 1 min are ignored. 

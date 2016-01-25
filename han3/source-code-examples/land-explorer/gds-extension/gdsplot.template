@@ -1,0 +1,207 @@
+<html>
+<head>
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<META HTTP-EQUIV="expires" CONTENT="Wed, 26 Feb 1997 08:21:57 GMT">
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<title> %%var%% of %%url%% </title>
+<style type="text/css">
+	
+	#leftbox {
+		position: absolute;
+		left:0px;
+		top:0px;
+		width:685px;
+		background:#fff;
+		border:1px solid #000;
+		}
+
+      #panbox {
+                position: absolute;
+                left: 695px;
+                top:5px;
+                padding: 5px;
+                width:170px;
+                height:150px;
+                background:#fff;
+                border:1px solid #000;
+                }
+
+      #zoombox { 
+                position: absolute;
+                left: 695px;
+                top:175px; 
+                padding: 5px;
+                width:170px;
+                height:100px;
+                background:#fff;
+                border:1px solid #000;
+                }
+ 
+       #typebox {
+                position: absolute;
+                left: 695px;  
+                top:305px;
+                padding: 5px;
+                width:170px;
+		height:50px;
+                background:#cfcfcf;
+                border:1px solid #000;
+                }
+
+
+	#locbox {
+		position: absolute;
+		left: 695px; 
+		top:385px;
+                padding: 5px;
+		width:170px;
+		height:120px;
+		background:#cfcfcf;
+		border:1px solid #000;
+		}
+
+        #tzbox {
+                position: absolute;
+                left: 1px;
+                top:555px;
+                padding: 1px;
+                width:683px;
+                height:25px;
+                background:#cfcfcf;
+                border:1px solid #000;
+                }
+
+        #exitbox {
+                position: absolute;
+                left: 695px;
+                top:530px;
+                padding: 0px;
+                width:170px;
+                height:20px;
+                background:#fff;
+                border:1px solid #000;
+                }
+
+</style>
+</head>
+<body>
+<div id="leftbox"> 
+<img src="%%imglink%%" border=0 align=right>
+</div>
+<div id="panbox">
+<center>
+<table>
+<tr><td colspan=3 align=center>
+<a href="/las-bin/gdsplot.pl?var=%%var%%&url=%%url%%&lat1=%%lat1%%&lat2=%%lat2%%&lon1=%%lon1%%&lon2=%%lon2%%&t=%%t%%&z=%%z%%&T=%%T%%&Z=%%Z%%&E=%%E%%&W=%%W%%&S=%%S%%&N=%%N%%&tp=%%tp%%&P=u"> <img src="/images/ua.gif" border=0> </a>
+</td></tr>
+<tr><td> 
+<a href="/las-bin/gdsplot.pl?var=%%var%%&url=%%url%%&lat1=%%lat1%%&lat2=%%lat2%%&lon1=%%lon1%%&lon2=%%lon2%%&t=%%t%%&z=%%z%%&T=%%T%%&Z=%%Z%%&E=%%E%%&W=%%W%%&S=%%S%%&N=%%N%%&tp=%%tp%%&P=l"> <img src="/images/la.gif" border=0> </a>
+</td>
+    <td> &nbsp; &nbsp; &nbsp; &nbsp; </td>
+    <td> 
+<a href="/las-bin/gdsplot.pl?var=%%var%%&url=%%url%%&lat1=%%lat1%%&lat2=%%lat2%%&lon1=%%lon1%%&lon2=%%lon2%%&t=%%t%%&z=%%z%%&T=%%T%%&Z=%%Z%%&E=%%E%%&W=%%W%%&S=%%S%%&N=%%N%%&tp=%%tp%%&P=r"> <img src="/images/ra.gif" border=0> </a>
+</td></tr> 
+<tr>
+<td colspan=3 align=center> 
+<a href="/las-bin/gdsplot.pl?var=%%var%%&url=%%url%%&lat1=%%lat1%%&lat2=%%lat2%%&lon1=%%lon1%%&lon2=%%lon2%%&t=%%t%%&z=%%z%%&T=%%T%%&Z=%%Z%%&E=%%E%%&W=%%W%%&S=%%S%%&N=%%N%%&tp=%%tp%%&P=d"> <img src="/images/da.gif" border=0> </a>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="zoombox">
+<center>
+<table cellpadding=4>
+<tr><td>
+<a href="/las-bin/gdsplot.pl?var=%%var%%&url=%%url%%&lat1=%%lat1%%&lat2=%%lat2%%&lon1=%%lon1%%&lon2=%%lon2%%&t=%%t%%&z=%%z%%&T=%%T%%&Z=%%Z%%&E=%%E%%&W=%%W%%&S=%%S%%&N=%%N%%&tp=%%tp%%&ZM=1"> <img src="/images/zi.gif" border=0> </a></td></tr>
+<tr><td> 
+<a href="/las-bin/gdsplot.pl?var=%%var%%&url=%%url%%&lat1=%%lat1%%&lat2=%%lat2%%&lon1=%%lon1%%&lon2=%%lon2%%&t=%%t%%&z=%%z%%&T=%%T%%&Z=%%Z%%&E=%%E%%&W=%%W%%&S=%%S%%&N=%%N%%&tp=%%tp%%&ZM=-1"> <img src="/images/zo.gif" border=0> </a></td></tr>
+</table>
+</center>
+</div>
+<div id="typebox">
+<form method="post" action="/las-bin/gdsplot.pl">
+<input type="hidden" name="url" value="%%url%%">
+<input type="hidden" name="var" value="%%var%%">
+<input type="hidden" name="lat1" value="%%lat1%%">
+<input type="hidden" name="lat2" value="%%lat2%%">
+<input type="hidden" name="lon1" value="%%lon1%%">
+<input type="hidden" name="lon2" value="%%lon2%%">
+<input type="hidden" name="T" value="%%T%%">
+<input type="hidden" name="Z" value="%%Z%%">
+<input type="hidden" name="t" value="%%t%%">
+<input type="hidden" name="z" value="%%z%%">
+<input type="hidden" name="E" value="%%E%%">
+<input type="hidden" name="W" value="%%W%%">
+<input type="hidden" name="S" value="%%S%%">
+<input type="hidden" name="N" value="%%N%%">
+<b>Select plot type: </b>
+<select name="tp">
+<option value="1">Shaded
+<option value="2">Contour
+<option value="3">Gridfill
+</select>
+<input type="submit" value="Plot">
+</form>
+</div>
+
+<div id="locbox">  
+<form method="post" action="/las-bin/gdsplot.pl">
+<input type="hidden" name="url" value="%%url%%">
+<input type="hidden" name="var" value="%%var%%">
+<input type="hidden" name="tp" value="%%tp%%">
+<input type="hidden" name="T" value="%%T%%">
+<input type="hidden" name="Z" value="%%Z%%">
+<input type="hidden" name="t" value="%%t%%">
+<input type="hidden" name="z" value="%%z%%">
+<input type="hidden" name="E" value="%%E%%">
+<input type="hidden" name="W" value="%%W%%">
+<input type="hidden" name="S" value="%%S%%">
+<input type="hidden" name="N" value="%%N%%">
+<b>Jump to (lat, lon):<br> </b>
+<table cellpadding=0 cellspacing=0>
+<tr><td colspan=2 align=center> <input type="text" name="lat2" maxlength=8 size=8 value="%%lat2%%"></td></tr>
+<tr><td> <input type="text" name="lon1" maxlength=8 size=8 value="%%lon1%%"></td>
+    <td> <input type="text" name="lon2" maxlength=8 size=8 value="%%lon2%%"></td> </tr>
+<tr><td colspan=2 align=center> <input type="text" name="lat1" maxlength=8 size=8 value="%%lat1%%"></td></tr>
+</table>
+<center><input type="submit" value="Go!"></center>
+</form>
+</div>
+<div id="exitbox">  
+<center>
+<a href="%%url%%"><img src="/images/exit.gif" border=0></a>
+</center>
+</div>
+<form method="post" action="/las-bin/gdsplot.pl">
+<input type="hidden" name="url" value="%%url%%">
+<input type="hidden" name="var" value="%%var%%">
+<input type="hidden" name="lat1" value="%%lat1%%">
+<input type="hidden" name="lat2" value="%%lat2%%">
+<input type="hidden" name="lon1" value="%%lon1%%">
+<input type="hidden" name="lon2" value="%%lon2%%">
+<input type="hidden" name="tp" value="%%tp%%">
+<input type="hidden" name="T" value="%%T%%">
+<input type="hidden" name="Z" value="%%Z%%">
+<input type="hidden" name="E" value="%%E%%">
+<input type="hidden" name="W" value="%%W%%">
+<input type="hidden" name="S" value="%%S%%">
+<input type="hidden" name="N" value="%%N%%">
+<div id="tzbox">
+<center>
+<table> <tr> 
+<td> <b>Enter a new time step (max: %%T%%): </b> </td>
+<td> <input type="text" name="t" maxlength=8 size=8 value="%%t%%"></td>
+<td> <b>Enter a new level (max: %%Z%%): </b> </td>
+<td> <input type="text" name="z" maxlength=8 size=8 value="%%z%%"></td>
+<td> <input type="submit" value="Plot"> </td>
+</tr> </table>
+</center>
+</div>
+</form>
+<!--pre>
+%%output%%
+</pre-->
+</body></html>
+

@@ -1,0 +1,83 @@
+=== 2000 
+Wed Jan 22 00:28:56 EST 2003
+Reply 1: RST = 1 Seq = 991736773 TTL = 206 Win = 1 
+Reply 1: RST = 1 Seq = 1566236322 TTL = 206 Win = 1 
+=== 3000 
+Wed Jan 22 00:29:02 EST 2003
+Reply 1: RST = 1 Seq = 2107759838 TTL = 186 Win = 1 
+=== 4000 
+Wed Jan 22 00:29:08 EST 2003
+Reply 1: RST = 1 Seq = 1519403850 TTL = 166 Win = 1 
+Reply 1: RST = 1 Seq = 1772751954 TTL = 166 Win = 1 
+=== 5000 
+Wed Jan 22 00:29:14 EST 2003
+Reply 1: RST = 1 Seq = 1532829204 TTL = 146 Win = 1 
+Reply 1: RST = 1 Seq = 1000435781 TTL = 146 Win = 1 
+=== 6000 
+Wed Jan 22 00:29:20 EST 2003
+Reply 1: RST = 1 Seq = 2070069550 TTL = 126 Win = 1 
+Reply 1: RST = 1 Seq = 733208922 TTL = 126 Win = 1 
+=== 7000 
+Wed Jan 22 00:29:26 EST 2003
+Reply 1: RST = 1 Seq = 64107668 TTL = 226 Win = 1 
+Reply 1: RST = 1 Seq = 1487398949 TTL = 226 Win = 1 
+=== 8000 
+Wed Jan 22 00:29:32 EST 2003
+Reply 1: RST = 1 Seq = 1294174416 TTL = 206 Win = 1 
+Reply 1: RST = 1 Seq = 1876077729 TTL = 206 Win = 1 
+=== 9000 
+Wed Jan 22 00:29:38 EST 2003
+Reply 1: RST = 1 Seq = 2010846586 TTL = 186 Win = 1 
+Reply 1: RST = 1 Seq = 819908939 TTL = 186 Win = 1 
+=== 10000 
+Wed Jan 22 00:29:44 EST 2003
+Reply 1: RST = 1 Seq = 1879077243 TTL = 166 Win = 1 
+Reply 1: RST = 1 Seq = 73314447 TTL = 166 Win = 1 
+=== 11000 
+Wed Jan 22 00:29:50 EST 2003
+Reply 1: RST = 1 Seq = 172205494 TTL = 161 Win = 1 
+Reply 1: RST = 1 Seq = 536165952 TTL = 161 Win = 1 
+=== 12000 
+Wed Jan 22 00:29:56 EST 2003
+Reply 1: RST = 1 Seq = 1525599093 TTL = 141 Win = 1 
+Reply 1: RST = 1 Seq = 322758860 TTL = 141 Win = 1 
+===ACK 2000 
+Wed Jan 22 00:30:02 EST 2003
+Reply 1: RST = 1 Seq = 1440567706 TTL = 206 Win = 1 
+Reply 1: RST = 1 Seq = 803121960 TTL = 206 Win = 1 
+===ACK 3000 
+Wed Jan 22 00:33:08 EST 2003
+Reply 1: RST = 1 Seq = 131906223 TTL = 186 Win = 1 
+Reply 1: RST = 1 Seq = 482105243 TTL = 186 Win = 1 
+===ACK 4000 
+Wed Jan 22 00:36:14 EST 2003
+Reply 1: RST = 1 Seq = 1694919112 TTL = 166 Win = 1 
+Reply 1: RST = 1 Seq = 1007765597 TTL = 166 Win = 1 
+===ACK 5000 
+Wed Jan 22 00:39:20 EST 2003
+Reply 1: RST = 1 Seq = 1778867731 TTL = 146 Win = 1 
+Reply 1: RST = 1 Seq = 405945547 TTL = 146 Win = 1 
+===ACK 6000 
+Wed Jan 22 00:42:26 EST 2003
+Reply 1: RST = 1 Seq = 1072095967 TTL = 126 Win = 1 
+===ACK 7000 
+Wed Jan 22 00:45:32 EST 2003
+Reply 1: RST = 1 Seq = 1020118370 TTL = 226 Win = 1 
+Reply 1: RST = 1 Seq = 868867580 TTL = 226 Win = 1 
+===ACK 8000 
+Wed Jan 22 00:48:38 EST 2003
+Reply 1: RST = 1 Seq = 780560533 TTL = 206 Win = 1 
+Reply 1: RST = 1 Seq = 1052285113 TTL = 206 Win = 1 
+===ACK 9000 
+Wed Jan 22 00:51:44 EST 2003
+Reply 1: RST = 1 Seq = 1709048445 TTL = 186 Win = 1 
+===ACK 10000 
+Wed Jan 22 00:54:50 EST 2003
+Reply 1: RST = 1 Seq = 542985751 TTL = 166 Win = 1 
+Reply 1: RST = 1 Seq = 1397044063 TTL = 166 Win = 1 
+===ACK 11000 
+Wed Jan 22 00:57:56 EST 2003
+===ACK 12000 
+Wed Jan 22 01:01:02 EST 2003
+Reply 1: RST = 1 Seq = 1190937570 TTL = 141 Win = 1 
+Reply 1: RST = 1 Seq = 559177588 TTL = 141 Win = 1 

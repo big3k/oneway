@@ -1,0 +1,55 @@
+
+	GDS Visualization Extension For LIS (4/28/2004)
+
+   This extension added a web-based interactive visualization 
+capability to GrADS-DODS server (GDS) 1.2.8.  It contains a patch 
+for GDS' source code,  a perl CGI script and a few other files. 
+For a demonstration of the extenstion, visit: 
+http://lisdata.gsfc.nasa.gov:9090/dods/LIS-DATA/CEOP-19/5KM
+and click the [Visualize!] links. 
+
+  Requirements: 
+  * GrADS-DODS server v1.2.8
+  * A web server with cgi support (e.g., Apache)
+  * Perl 
+  * GrADS 1.8 or newer with DODS support. 
+
+  Steps to install the extenstion:
+
+1. Locate the web server document root directory, $WEBROOT, and copy all the 
+files in the "images" sub-directory to $WEBROOT/images/. 
+
+2. Locate the web server's cgi directory, and copy the following
+   3 files there:
+        gds_title.gs  
+   	gdsplot.pl  
+        gdsplot.template
+
+3. Edit gdsplot.pl in the cgi directory to update the values of the variables 
+   $GADDIR, $GASCRP and $GRADS to reflect your environment, and make sure the file 
+   has executable permission by the web server. 
+
+4. Edit gdsplot.template in the cgi directory to update all the links to the 
+   cgi "gdsplot.pl". 
+
+5. Locate GDS 1.2.8's root directly, $GDSROOT, and copy "GradsGridExtracter.java"
+to $GDSROOT/src/org/iges/grads/server/.
+
+6. Edit the copied "GradsGridExtracter.java" to update lines 603 and 604 shown below
+   to fit your system setting. Change "http://lisdata.gsfc.nasa.gov/las-bin" in line 603
+   to your webserver's cgi path, and "http://http://lisdata.gsfc.nasa.gov:9090/dods/"
+   in line 604 to your GDS server's path.
+
+603     info.print("<a href=\"http://lisdata.gsfc.nasa.gov/las-bin/gdsplot.pl?var=" +  
+604                         lvar + "&url=http://lisdata.gsfc.nasa.gov:9090/dods/" +
+
+7. Recompile the source code and restart the GDS server: 
+     cd $GDSROOT/src/
+     ./makejar
+     cd ..
+     ./rebootserver
+
+Then your GDS will be running with the visualization capability.  
+
+Contact yudong@hsb.gsfc.nasa.gov if you have any questions. 
+

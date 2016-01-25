@@ -1,0 +1,49 @@
+head	1.1;
+access;
+symbols;
+locks
+	bbuser:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2003.05.21.20.21.19;	author bbuser;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#!/usr/bin/perl
+@@output=`ls -U /data1/pool/done/ |/bin/sort -n`; 
+$i = 1; 
+$fname = 0; 
+$last = pop @@output;
+chomp $last; 
+print "Content-type: text/html\n\n";
+print "<html><body><h3> Done </h3> <pre>\n";
+while ($i < $last) {
+  for ($j=$i; $j<$i+4; $j++) {
+   if (-e "/data1/pool/done/$j") {
+    print "$j\t";
+   } else {
+    print " \t";
+   } # end if
+  } # end for
+
+   print "\n";
+   $i+=4; 
+  
+}
+print "</pre></body></html>\n";
+ 
+
+
+@
