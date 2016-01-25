@@ -1,0 +1,1349 @@
+head	1.20;
+access;
+symbols;
+locks
+	oneway:1.20; strict;
+comment	@ * @;
+
+
+1.20
+date	2011.06.12.18.47.29;	author oneway;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2011.06.10.03.46.20;	author oneway;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2011.06.07.03.47.17;	author oneway;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2011.06.07.02.49.11;	author oneway;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2011.06.05.20.59.51;	author oneway;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2011.06.05.05.31.53;	author oneway;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2011.06.05.05.12.03;	author oneway;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2011.06.05.03.10.56;	author oneway;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2011.06.04.17.11.06;	author oneway;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2011.06.04.14.33.58;	author oneway;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2011.06.03.21.21.32;	author oneway;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2011.06.03.21.08.15;	author oneway;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2011.06.01.04.30.11;	author oneway;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2011.06.01.04.25.44;	author oneway;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2011.05.30.19.06.06;	author oneway;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2011.05.30.04.39.17;	author oneway;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2011.05.30.03.24.14;	author oneway;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2011.05.29.22.04.03;	author oneway;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2011.05.29.21.59.57;	author oneway;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2011.05.29.21.16.50;	author oneway;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.20
+log
+@Encryption length changed from 28 bytes to 40.
+@
+text
+@
+/* ================================================================
+  $Id: u2u_transform.c,v 1.19 2011/06/10 03:46:20 oneway Exp oneway $
+  1. Decapsulates incoming UDP to TCP
+  2. Encapsulates outgoing TCP to UDP 
+
+In 1, incoming UDP has payload padding and encryption, except 
+if the payload is PSH/ACK, no padding, only encryption. 
+In 2, no padding/encryption yet. 
+
+Iptables rules used: 
+
+port=4000
+/sbin/iptables -F
+/sbin/iptables -I INPUT -p udp --dport $port -j NFQUEUE --queue-num 3
+/sbin/iptables -I OUTPUT -p tcp -s 192.168.1.80 --sport $port -j NFQUEUE --queue-num 3
+
+# Need to turn off TSO:
+# list offload options:
+[root@@vadtw4 ~]# /usr/sbin/ethtool -k eth0
+
+# turn off tso
+[root@@vadtw4 ~]# /usr/sbin/ethtool -K eth0 tso off
+
+====================================================================*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h> 
+#include <time.h> 
+#include <unistd.h>
+#include <netinet/in.h>
+#include <netinet/ip.h>
+#include <linux/types.h>
+#include <linux/netfilter.h>		/* for NF_ACCEPT */
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+#include <libnetfilter_queue/libnetfilter_queue.h>
+
+#define __FAVOR_BSD
+#include <netinet/udp.h>
+#include <netinet/tcp.h>
+
+// out is a static buffer. returns new length of data in out
+extern int DecryptPacket0(char* in, int in_len, char* out);
+extern int EncryptPacket0(char* in, int in_len, char* out);
+extern int DecryptPacket1(char* in, int in_len, char* out);
+extern int EncryptPacket1(char* in, int in_len, char* out);
+extern int DecryptPacket2(char* in, int in_len, char* out);
+extern int EncryptPacket2(char* in, int in_len, char* out);
+extern int DecryptPacket3(char* in, int in_len, char* out);
+extern int EncryptPacket3(char* in, int in_len, char* out);
+
+int (*EncryptPacket)(char* in, int in_len, char* out);
+int (*DecryptPacket)(char* in, int in_len, char* out);
+
+/* global variables */
+int stateful = 0;    // 1: transforms psh/ack after seeing ack in 
+                     // 0: transforms psh/ack anyway 
+
+int usport = 444;   // default userver src port 
+
+int sock;   // for socket sending of UDP
+
+unsigned char newpkt[4096];   // this is for transforms that expand 
+                              // the size of the original packet. 
+                              // Need a new buffer for that. 
+unsigned char encbuf[4096];   // buffer for enc/dec functions 
+
+struct tcp_option_mss {
+    uint8_t kind; /* 2 */
+    uint8_t len; /* 4 */
+    uint16_t mss;
+} __attribute__((packed));
+
+struct pseudo_header {   //needed for checksum calculation
+        unsigned long source_address;
+        unsigned long dest_address;
+        unsigned char placeholder;
+        unsigned char protocol;
+        unsigned short tcp_length;
+        //char tcp[28];
+        struct tcphdr tcp;
+};   
+
+struct upseudo_header {   //needed for checksum calculation
+        unsigned long source_address;
+        unsigned long dest_address;
+        unsigned char placeholder;
+        unsigned char protocol;
+        unsigned short udp_length;
+        //char tcp[28];
+        struct udphdr udp;
+};
+
+//General Networking Functions
+ unsigned short in_checksum( unsigned short *ptr, int nbytes) {
+        register long sum;
+        unsigned short oddbyte;
+        register short answer;
+
+        sum=0;
+        while(nbytes>1) {
+                sum+=*ptr++;
+                nbytes-=2;
+        }
+        if(nbytes==1) {
+                oddbyte=0;
+                *((u_char*)&oddbyte)=*(u_char*)ptr;
+                sum+=oddbyte;
+        }
+
+        sum = (sum>>16)+(sum & 0xffff);
+        sum = sum + (sum>>16);
+        answer=(short)~sum;
+
+        return(answer);
+}
+
+void print_ip_pkt(unsigned char *data, unsigned int ip_len) { 
+    int i; 
+
+    printf("payload_len=%d \n", ip_len);
+    // display packet data
+    printf("%43s", " ");
+    for (i = 0; i < ip_len; i++) {
+        printf("%02x ", data[i]);
+        switch ( (i+15)% 16 ) {
+           case 0: printf("\n");  break;
+           case 8: printf(" ");  break;
+        }
+    }
+   fputc('\n', stdout);
+   fputc('\n', stdout);
+}
+
+/* sends out a UDP via regular socket,  so hopefully 
+   conntrack can fix it. input newpkt is a TCP segment w/ ip header
+*/
+unsigned int send_udp(unsigned char *newpkt, unsigned int pay_len) {
+   int hdrlen, newlen, encl; 
+   struct sockaddr_in dst_addr;   // source and dst 
+   struct ip *iph = (struct ip *) newpkt;
+   struct tcphdr *tcph = (struct tcphdr *) ( newpkt + sizeof(struct ip) ) ;
+   struct tcp_option_mss *mss; 
+   memset(&dst_addr, 0, sizeof(dst_addr)); 
+   dst_addr.sin_family = AF_INET; 
+   dst_addr.sin_addr.s_addr = iph->ip_dst.s_addr;
+   dst_addr.sin_port = tcph->th_dport; 
+   tcph->th_sport = htons(usport); 
+   hdrlen = sizeof(struct ip); 
+
+  // change MSS values to avoid ip frag in returning packet
+  if (tcph->th_flags == 0x12) {  // has MSS field
+     mss = (struct tcp_option_mss *) ( (char *) tcph + sizeof(struct tcphdr));
+#ifdef DEBUG
+     printf("Outgoing Original MSS=%d\n", ntohs(mss->mss) );
+#endif
+     if ( ntohs(mss->mss) > 1340 ) mss->mss = htons(1340);
+  }
+
+  encl = pay_len - hdrlen;    
+  if (encl > 40 ) encl = 40;          // only encrypts tcp header or first 40 bytes 
+  /* enc tcp payload  */
+  newlen = (*EncryptPacket)( (char *)(newpkt + hdrlen), encl, 
+                             (char *) encbuf );
+#ifdef DEBUG
+  printf("Outgoing UDP: tcp header in: %d, out: %d\n", encl, newlen); 
+  if (newlen >= 0) print_ip_pkt(newpkt, encl); 
+#endif
+   // append the rest of payload unencrypted
+   memcpy( encbuf+newlen,  (char *)(newpkt + hdrlen + encl), 
+           pay_len - hdrlen - encl);   
+
+   return sendto(sock, encbuf, pay_len-hdrlen-encl+newlen, 0, 
+                       (struct sockaddr *) &dst_addr, 
+                        sizeof(dst_addr) ); 
+}
+
+
+/* remove UDP encapsulation */
+/* no padding for PSH/ACK segments */
+unsigned int transform_u2t(unsigned char *data, unsigned int ip_len) {
+  unsigned char seudo[4096];
+  unsigned char sip[256];
+  unsigned char dip[256];
+  int i, newl, tcpl, encl;
+  struct pseudo_header phdr;
+  struct ip *iph = (struct ip *) data;
+  struct udphdr *udph = (struct udphdr *) ( data + sizeof(struct ip) ) ;
+  struct tcphdr *tcph = (struct tcphdr *) ( data + sizeof(struct ip) +
+                                                   sizeof(struct udphdr) );
+  struct tcp_option_mss *mss; 
+  time_t rawt;
+  char *tstr;
+  unsigned key; 
+
+  tcpl = ip_len - sizeof(struct ip) - sizeof(struct udphdr); 
+  if (tcpl < 22) return ip_len;  // not TCP payload, do nothing
+     
+  encl = tcpl; 
+  if (encl > 42) encl = 42;   // only the first 40 bytes or less are ciphertext
+  newl =  (*DecryptPacket)( (char *) tcph, encl, (char *)encbuf );
+  tcpl = tcpl - encl + newl;    // new tcp size, with header newl
+  memcpy ( encbuf + newl, (char *) tcph + encl, tcpl - newl );  
+  memcpy( (char *)tcph, encbuf, tcpl );
+
+#ifdef DEBUG
+      printf("\nTCP in UDP ack= %u\n", ntohl(tcph->th_ack)) ;
+      printf("\ntcph->th_off= %u\n", tcph->th_off) ;
+      printf("\ntcph->th_x2= %u\n", tcph->th_x2) ;
+      printf("\niph->ip_len= %u\n", ntohs(iph->ip_len)) ;
+      time ( &rawt );
+      tstr = ctime( &rawt );
+      for (i=4; i<strlen(tstr)-5; i++) putchar(tstr[i]);
+      printf("TCP in UDP: %s:%d -> %s:%d\n",
+             inet_ntoa(iph->ip_src), ntohs(tcph->th_sport),
+             inet_ntoa(iph->ip_dst), ntohs(tcph->th_dport) );
+      printf("TCP in UDP flag in: %02x \n", tcph->th_flags); 
+#endif
+  tcph->th_sport = udph->uh_sport;
+  tcph->th_dport = udph->uh_dport;
+  // change MSS values to avoid ip frag in returning packet
+  if (tcph->th_flags == 0x02 && newl >= 24 ) {  // has MSS field
+     mss = (struct tcp_option_mss *) ( (char *) tcph + sizeof(struct tcphdr)); 
+     printf("Original MSS=%d\n", ntohs(mss->mss) ); 
+     if ( ntohs(mss->mss) > 1340 ) mss->mss = htons(1340); 
+  }
+  memcpy( (char *)udph, (char *)tcph, tcpl);
+  tcph = (struct tcphdr *) udph;   // move up the tcp header pointer 
+
+  iph->ip_p = 6; 
+  iph->ip_len = htons( tcpl + sizeof(struct ip) );   // new packet length
+  iph->ip_sum = 0; 
+  iph->ip_sum = in_checksum((unsigned short*)iph, sizeof(struct ip)); 
+  // Recalculate TCP checksum because IP header possibly changed due to NAT
+  tcph->th_sum = 0;
+  phdr.source_address =  iph->ip_src.s_addr;
+  phdr.dest_address =  iph->ip_dst.s_addr;
+  phdr.placeholder = 0;
+  phdr.protocol = IPPROTO_TCP;
+  phdr.tcp_length = htons( tcpl );
+  memcpy(&phdr.tcp, (unsigned char *)tcph, sizeof(struct tcphdr) );
+  memcpy(seudo, &phdr, sizeof(struct pseudo_header) );
+  // append tcp option, payload
+  memcpy(seudo + sizeof(struct pseudo_header),
+         (unsigned char *)tcph+sizeof(struct tcphdr),
+         tcpl - sizeof(struct tcphdr) );
+
+  tcph->th_sum = in_checksum((unsigned short*)seudo,
+       sizeof(struct pseudo_header) +          //pseudo-hdr + payload
+       tcpl - sizeof(struct tcphdr) );
+
+  return sizeof(struct ip) + tcpl; 
+}
+
+
+/* remove UDP encapsulation to a TCP segment */
+unsigned int transform_t2u(unsigned char *data, unsigned int ip_len) { 
+  unsigned char seudo[4096];
+  unsigned char rndc[256];
+  unsigned char sip[256]; 
+  unsigned char dip[256]; 
+  int i, rndl, tcpl, newl; 
+  // craft typical win tcp options
+  unsigned char opt[] = "\x02\x04\x04\xec\x01\x01\x04\x02"; 
+  struct upseudo_header uphdr; 
+  static unsigned long lastseq;   // save the seq # of the incoming ack 
+  time_t rawt;
+  char *tstr; 
+  unsigned key;
+
+  // point to the new data structure, newpkt. global var
+  struct ip *iph = (struct ip *) newpkt;
+  struct udphdr *udph = (struct udphdr *) ( newpkt + sizeof(struct ip) ) ;
+  struct tcphdr *tcph = (struct tcphdr *) ( newpkt + sizeof(struct ip) +
+                                                   sizeof(struct udphdr) );
+  tcpl = ip_len - sizeof(struct ip); 
+  newl = ip_len + sizeof(struct udphdr); 
+  memcpy( (char *)iph, data, sizeof(struct ip) );
+  memcpy( (char *)tcph, data + sizeof(struct ip), tcpl); 
+  udph->uh_sport = tcph->th_sport; 
+  udph->uh_dport = tcph->th_dport; 
+  udph->uh_ulen = htons( sizeof(struct udphdr) + tcpl ); 
+  udph->uh_sum  = 0;
+
+  // padding and encryption 
+      
+#ifdef DEBUG
+      time ( &rawt ); 
+      tstr = ctime( &rawt );
+      for (i=4; i<strlen(tstr)-5; i++) putchar(tstr[i]);
+      printf("TCP: %s:%d -> %s:%d\n", 
+             sip, ntohs(tcph->th_sport), 
+             dip, ntohs(tcph->th_dport) );  
+      printf("TCP flag in: %02x TCP flag out: %02x\n", tcph->th_flags, TH_SYN); 
+#endif
+
+      iph->ip_len = htons(newl);   // new packet length
+      iph->ip_p = 17;       // UDP
+      iph->ip_sum = 0; 
+      iph->ip_sum = in_checksum((unsigned short*)iph, sizeof(struct ip)); 
+       
+  // Recalculate UDP checksum
+  udph->uh_sum = 0;
+  uphdr.source_address =  iph->ip_src.s_addr; 
+  uphdr.dest_address =  iph->ip_dst.s_addr; 
+  uphdr.placeholder = 0;
+  uphdr.protocol = IPPROTO_UDP;
+  uphdr.udp_length = htons( newl - sizeof(struct ip) );
+  memcpy(&uphdr.udp, (unsigned char *)udph, sizeof(struct udphdr) );
+  memcpy(seudo, &uphdr, sizeof(struct upseudo_header) ); 
+  // append payload
+  memcpy(seudo + sizeof(struct upseudo_header), 
+         (unsigned char *)udph+sizeof(struct udphdr),
+         newl-sizeof(struct ip) - sizeof(struct udphdr) ); 
+
+  udph->uh_sum = in_checksum((unsigned short*)seudo,
+       sizeof(struct upseudo_header) + newl         //pseudo-hdr + payload
+       - sizeof(struct ip) - sizeof(struct udphdr) );
+
+  return newl; 
+}
+
+/* returns packet id */
+static u_int32_t display_pkt (struct nfq_data *tb)
+{
+	int id = 0;
+	struct nfqnl_msg_packet_hdr *ph;
+	struct nfqnl_msg_packet_hw *hwph;
+	u_int32_t mark,ifi; 
+	int ret, i;
+	unsigned char *data;
+
+	ph = nfq_get_msg_packet_hdr(tb);
+	if (ph) {
+		id = ntohl(ph->packet_id);
+#ifdef DEBUG
+		printf("hw_protocol=0x%04x hook=%u id=%u ",
+			ntohs(ph->hw_protocol), ph->hook, id);
+#endif
+	}
+
+#ifdef DEBUG
+	hwph = nfq_get_packet_hw(tb);
+	if (hwph) {
+		int i, hlen = ntohs(hwph->hw_addrlen);
+
+		printf("hw_src_addr=");
+		for (i = 0; i < hlen-1; i++)
+			printf("%02x:", hwph->hw_addr[i]);
+		printf("%02x ", hwph->hw_addr[hlen-1]);
+	}
+
+	mark = nfq_get_nfmark(tb);
+	if (mark)
+		printf("mark=%u ", mark);
+
+	ifi = nfq_get_indev(tb);
+	if (ifi)
+		printf("indev=%u ", ifi);
+
+	ifi = nfq_get_outdev(tb);
+	if (ifi)
+		printf("outdev=%u ", ifi);
+	ifi = nfq_get_physindev(tb);
+	if (ifi)
+		printf("physindev=%u ", ifi);
+
+	ifi = nfq_get_physoutdev(tb);
+	if (ifi)
+		printf("physoutdev=%u ", ifi);
+
+#endif
+	ret = nfq_get_payload(tb, &data);
+#ifdef DEBUG
+	if (ret >= 0) print_ip_pkt(data, ret); 
+#endif
+
+	return id;
+}
+	
+
+static int cb(struct nfq_q_handle *qh, struct nfgenmsg *nfmsg,
+	      struct nfq_data *nfa, void *data)
+{
+	unsigned char *payload;
+	unsigned int pay_len, encl; 
+        struct ip *iph, *iph2; 
+
+	u_int32_t id = display_pkt(nfa);
+	pay_len = nfq_get_payload(nfa, &payload);  
+
+#ifdef DEBUG
+	printf("entering callback\n");
+	printf("Transformed packet\n");
+        print_ip_pkt(payload, pay_len); 
+#endif
+
+        encl = sizeof(struct ip); 
+        iph = (struct ip *) payload; 
+        //-if ( iph->ip_p == 4 ) { // UDP encap'g TCP 
+        //-  iph2 = (struct ip *) ( payload + encl ); 
+        //-  if ( iph2->ip_p == 17 ) { // UDP encap'g TCP 
+          if ( iph->ip_p == 17 ) { // UDP encap'g TCP 
+#ifdef DEBUG
+ 	    //- printf("ipip enc UDP recieved, encl=%d\n", encl);
+ 	    printf("udp enc tcp receivved\n"); 
+#endif
+          //- pay_len = transform_u2t( (payload + encl), pay_len - encl ) 
+          //-            + encl;  // return new len
+           pay_len = transform_u2t( payload , pay_len);  
+	   return nfq_set_verdict(qh, id, NF_ACCEPT, pay_len, payload);
+         //-} else { 
+	 //-  return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+         //- }
+        } else {  // TCP 
+        //  pay_len = transform_t2u(payload, pay_len);  // data in newpkt now 
+       // send it back to kernel, so hopefully onntrack will take care of it
+          if ( send_udp(payload, pay_len) < 0 )   
+            fprintf(stderr, "socket sending udp failed ..."); 
+                                                 
+	  //return nfq_set_verdict(qh, id, NF_ACCEPT, pay_len, newpkt);
+	  return nfq_set_verdict(qh, id, NF_DROP, 0, NULL); 
+        }
+}
+
+int main(int argc, char **argv)
+{
+        struct sockaddr_in src_addr;   // source and dst
+	struct nfq_handle *h;
+	struct nfq_q_handle *qh;
+	struct nfnl_handle *nh;
+	int c, fd, qid=3, enc_id=1;
+        int udport = 4000; 
+	int rv;
+        char uip[1024]="192.168.1.80";   // default
+	char buf[4096] __attribute__ ((aligned));
+
+        while ((c = getopt(argc, argv, "q:s:u:d:e:h")) != EOF) {
+           switch (c) {
+              case 'q':
+                qid = atoi(optarg); 
+                break; 
+              case 's':
+                usport = atoi(optarg); 
+                break; 
+              case 'd':
+                udport = atoi(optarg); 
+                break; 
+              case 'u':
+                strncpy(uip, optarg, 1024); 
+                break; 
+              case 'e':
+                enc_id = atoi(optarg); 
+                break; 
+              case 'h':
+              default: 
+                printf("Usage: %s -q queu_id -s usvr_sport -u usvr_ip -d usvr_dport -e enc_id \n", 
+                        argv[0]);
+                printf("Example: if userver has config line: \n"); 
+                printf("udp : 444 : 192.168.1.80:4000\n"); 
+                printf("And run encryption algorithm 2, then run as: \n"); 
+                printf("%s -q 3 -s 444 -u 192.168.1.80 -d 4000 -e 2\n", argv[0]);
+                exit(1); 
+           }
+       }
+
+       switch(enc_id) { 
+          case 0: 
+            EncryptPacket = &EncryptPacket0; 
+            DecryptPacket = &DecryptPacket0; 
+            break; 
+          case 1: 
+            EncryptPacket = &EncryptPacket1; 
+            DecryptPacket = &DecryptPacket1; 
+            break; 
+          case 2: 
+            EncryptPacket = &EncryptPacket2; 
+            DecryptPacket = &DecryptPacket2; 
+            break; 
+          case 3: 
+            EncryptPacket = &EncryptPacket3; 
+            DecryptPacket = &DecryptPacket3; 
+            break; 
+          default: 
+            printf("enc_id %d out of range <0|1|2|3> !\n", enc_id); 
+            exit(1); 
+       }
+
+       stateful = 0;  
+#ifdef DEBUG
+         
+      printf("Userver config: %d:%s:%d ...\n", usport, uip, udport);
+      printf("Queue %d started ...\n", qid);
+#endif
+
+     /* Create the UDP socket */
+       memset(&src_addr, 0, sizeof(src_addr));
+       src_addr.sin_family = AF_INET;
+       src_addr.sin_addr.s_addr = inet_addr(uip); 
+       src_addr.sin_port = htons(udport); 
+       
+       if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
+           fprintf(stderr, "failed to create socket");
+           exit(1); 
+       }
+  
+       if ( bind(sock, (struct sockaddr *)&src_addr, sizeof(src_addr)) < 0 ){ 
+           fprintf(stderr, "failed to bind  socket");
+           exit(1); 
+       }
+
+	printf("opening library handle\n");
+	h = nfq_open();
+	if (!h) {
+		fprintf(stderr, "error during nfq_open()\n");
+		exit(1);
+	}
+
+	printf("unbinding existing nf_queue handler for AF_INET (if any)\n");
+	if (nfq_unbind_pf(h, AF_INET) < 0) {
+		fprintf(stderr, "error during nfq_unbind_pf()\n");
+		exit(1);
+	}
+
+	printf("binding nfnetlink_queue as nf_queue handler for AF_INET\n");
+	if (nfq_bind_pf(h, AF_INET) < 0) {
+		fprintf(stderr, "error during nfq_bind_pf()\n");
+		exit(1);
+	}
+
+	printf("binding this socket to queue %d\n", qid);
+	qh = nfq_create_queue(h,  qid, &cb, NULL);
+	if (!qh) {
+		fprintf(stderr, "error during nfq_create_queue()\n");
+		exit(1);
+	}
+
+	printf("setting copy_packet mode\n");
+	if (nfq_set_mode(qh, NFQNL_COPY_PACKET, 0xffff) < 0) {
+		fprintf(stderr, "can't set packet_copy mode\n");
+		exit(1);
+	}
+
+	fd = nfq_fd(h);
+
+	while ((rv = recv(fd, buf, sizeof(buf), 0)) && rv >= 0) {
+		printf("pkt received\n");
+		nfq_handle_packet(h, buf, rv);
+	}
+
+	printf("unbinding from queue 0\n");
+	nfq_destroy_queue(qh);
+
+#ifdef INSANE
+	/* normally, applications SHOULD NOT issue this command, since
+	 * it detaches other programs/sockets from AF_INET, too ! */
+	printf("unbinding from AF_INET\n");
+	nfq_unbind_pf(h, AF_INET);
+#endif
+
+	printf("closing library handle\n");
+	nfq_close(h);
+
+	exit(0);
+}
+@
+
+
+1.19
+log
+@Can you change this IP to configurable?
+src_addr.sin_addr.s_addr = inet_addr("192.168.1.80");
+
+I need this flexibility to run multiple protocols on the same server.
+
+Thanks
+Bill
+
+On 6/9/11 6:31 PM, Bill Xia wrote:
+> Oneway:
+>
+> When packet is short,  like 4 bytes, it always get seg fault.
+>
+> Can you add more error checking?
+>
+> Thanks
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.18 2011/06/07 03:47:17 oneway Exp oneway $
+d164 1
+a164 1
+  if (encl > 28 ) encl = 28;          // only encrypts tcp header or first 28 bytes 
+d203 1
+a203 1
+  if (encl > 30) encl = 30;   // only the first 30 bytes or less are ciphertext
+@
+
+
+1.18
+log
+@Fixed a length calculation bug in send_udp.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.17 2011/06/07 02:49:11 oneway Exp oneway $
+d200 2
+d438 1
+d441 1
+a441 1
+        while ((c = getopt(argc, argv, "q:s:d:e:h")) != EOF) {
+d452 3
+d460 1
+a460 1
+                printf("Usage: %s -q queu_id -s usvr_sport -d usvr_dport -e enc_id \n", 
+d465 1
+a465 1
+                printf("%s -q 3 -s 444 -d 4000 -e 2\n", argv[0]);
+d494 3
+a496 1
+	  printf("Queue %d started ...\n", qid);
+d502 1
+a502 1
+       src_addr.sin_addr.s_addr = inet_addr("192.168.1.80"); 
+@
+
+
+1.17
+log
+@UPdated all encryption routines: ciphertext is always 2-byte longer than plaintext. Changes made accordingly in here. Not tested yet.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.16 2011/06/05 20:59:51 oneway Exp oneway $
+d170 1
+a170 1
+  if (newlen >= 0) print_ip_pkt(encbuf, newlen); 
+d176 1
+a176 1
+   return sendto(sock, encbuf, pay_len-encl+newlen, 0, 
+@
+
+
+1.16
+log
+@implemented encryption algorithm 0-3.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.15 2011/06/05 05:31:53 oneway Exp oneway $
+d142 1
+a142 1
+   int hdrlen, newlen; 
+d163 5
+a167 3
+   /* enc tcp payload  */
+   newlen = (*EncryptPacket)( (char *)(newpkt + hdrlen), pay_len - hdrlen,
+                (char *) encbuf);
+d169 2
+a170 1
+   if (newlen >= 0) print_ip_pkt(encbuf, newlen); 
+d172 3
+d176 1
+a176 1
+   return sendto(sock, encbuf, newlen, 0, 
+d188 1
+a188 1
+  int i, newl, tcpl;
+d200 6
+a205 2
+  newl =  (*DecryptPacket)( (char *) tcph, tcpl, (char *)encbuf );
+  memcpy( (char *)tcph, encbuf, newl );
+d228 1
+a228 1
+  memcpy( (char *)udph, (char *)tcph, newl);
+d232 1
+a232 1
+  iph->ip_len = htons( newl + sizeof(struct ip) );   // new packet length
+d241 1
+a241 1
+  phdr.tcp_length = htons( newl );
+d247 1
+a247 1
+         newl - sizeof(struct tcphdr) );
+d251 1
+a251 1
+       newl - sizeof(struct tcphdr) );
+d253 1
+a253 1
+  return sizeof(struct ip) + newl; 
+@
+
+
+1.15
+log
+@Clamped MSS in outgoing SYN/ACK to 1360 too.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.14 2011/06/05 05:12:03 oneway Exp oneway $
+d46 2
+d52 2
+d139 1
+a139 1
+   conntrack can fix it 
+a168 4
+   /* test for no encryption 
+   newlen = pay_len - hdrlen; 
+   memcpy(encbuf, newpkt-hdrlen, newlen); 
+    end test for no encryption */
+d194 2
+a195 8
+  /* decrypting payload  --old alg
+  key = ( ( ip_len * ip_len ) % 127 ) + 1; 
+  tstr = (char *) tcph; 
+  for (i=0; i<tcpl; i++) tstr[i] = tstr[i] ^ key;  
+  */ 
+  /*--- new algorithm ----*/ 
+   newl =  (*DecryptPacket)( (char *) tcph, tcpl, (char *)encbuf );
+   memcpy( (char *)tcph, encbuf, newl );
+d206 2
+a207 2
+             sip, ntohs(tcph->th_sport),
+             dip, ntohs(tcph->th_dport) );
+a211 6
+  // Get rid of UDP encap, ignore any TCP payload if not PSH/ACK
+  if (tcph->th_flags != 0x18 ) {
+         tcpl = tcph->th_off * 4;  // header length only
+  } else {
+         tcpl = tcpl - 2; 
+  }
+d213 1
+a213 1
+  if (tcph->th_flags == 0x02 && tcpl >= 24 ) {  // has MSS field
+d218 1
+a218 1
+  memcpy( (char *)udph, (char *)tcph, tcpl);
+d222 1
+a222 1
+  iph->ip_len = htons( tcpl + sizeof(struct ip) );   // new packet length
+d231 1
+a231 1
+  phdr.tcp_length = htons( tcpl );
+d237 1
+a237 1
+         tcpl - sizeof(struct tcphdr) );
+d241 1
+a241 1
+       tcpl - sizeof(struct tcphdr) );
+d243 1
+a243 1
+  return sizeof(struct ip) + tcpl; 
+d455 4
+d467 4
+d472 1
+a472 1
+            printf("enc_id %d out of range <1|2> !\n", enc_id); 
+@
+
+
+1.14
+log
+@Fixed a bug: need to change ip len and tcp len in header after decryption.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.13 2011/06/05 03:10:56 oneway Exp oneway $
+d142 1
+d150 9
+@
+
+
+1.13
+log
+@Added encryption algorithm switch.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.12 2011/06/04 17:11:06 oneway Exp oneway $
+d148 1
+d152 3
+a157 3
+#ifdef DEBUG
+   if (newlen >= 0) print_ip_pkt(encbuf, newlen); 
+#endif
+d183 1
+a184 1
+  tcpl = ip_len - sizeof(struct ip) - sizeof(struct udphdr); 
+d209 5
+a213 1
+  if (tcph->th_flags != 0x18 ) tcpl = tcph->th_off * 4;  // header length only
+@
+
+
+1.12
+log
+@Added comment on how to turn off tso.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.11 2011/06/04 14:33:58 oneway Exp oneway $
+d46 7
+a52 2
+extern int DecryptPacket(char* in, int in_len, char* out);
+extern int EncryptPacket(char* in, int in_len, char* out);
+d149 1
+a149 1
+   newlen = EncryptPacket( (char *)(newpkt + hdrlen), pay_len - hdrlen,
+d182 1
+a182 1
+  /* decrypting payload */ 
+d187 1
+d189 2
+a190 2
+  // newl =  DecryptPacket( (char *) tcph, tcpl, encbuf);
+  // memcpy( (char *)tcph, encbuf, newl );
+d420 1
+a420 1
+	int c, fd, qid=3;
+d425 1
+a425 1
+        while ((c = getopt(argc, argv, "q:s:d:h")) != EOF) {
+d436 3
+d441 1
+a441 1
+                printf("Usage: %s -q queu_id -s usvr_sport -d usvr_dport \n", 
+d445 2
+a446 2
+                printf("Then, run as: \n"); 
+                printf("%s -q 3 -s 444 -d 4000\n", argv[0]);
+d451 14
+@
+
+
+1.11
+log
+@added "-h" command line option to show usage.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.10 2011/06/03 21:21:32 oneway Exp oneway $
+d17 8
+@
+
+
+1.10
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.9 2011/06/03 21:08:15 oneway Exp oneway $
+d411 1
+a411 1
+        while ((c = getopt(argc, argv, "q:s:d:")) != EOF) {
+d422 1
+@
+
+
+1.9
+log
+@Added encryption to return payload, and clamped down incoming MSS to 1340.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.8 2011/06/01 04:30:11 oneway Exp oneway $
+d54 6
+a154 1
+  unsigned short *mss; 
+d164 1
+d197 3
+a199 3
+     mss = (unsigned short *) ( (char *) tcph + 22 ); 
+     printf("Original MSS=%d\n", ntohs(*mss) ); 
+     if ( ntohs(*mss) > 1340 ) *mss = htons(1340); 
+@
+
+
+1.8
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.7 2011/06/01 04:25:44 oneway Exp oneway $
+d37 4
+d45 2
+d52 1
+d119 1
+a119 1
+   int hdrlen; 
+d127 1
+a127 1
+   tcph->th_sport = htons(444); 
+d129 12
+a140 1
+   return sendto(sock, newpkt + hdrlen, pay_len - hdrlen, 0, 
+d142 1
+a142 1
+                       sizeof(dst_addr) ); 
+d149 1
+d153 1
+a153 1
+  int i, rndl, tcpl;
+d168 3
+d189 6
+d396 1
+a396 2
+   struct sockaddr_in src_addr;   // source and dst
+
+d400 2
+a401 1
+	int fd, qid;
+d405 21
+a425 5
+        if(argc != 3) {
+          printf("Usage: %s -q n  \n", argv[0]);
+          printf("       -q: queue id\n"); 
+          exit(-1);
+        }
+a427 2
+       if ( strncmp (argv[1], "-q", 2) == 0 ) {
+          qid = atoi(argv[2]);  
+a430 4
+       } else  {
+	  printf("Wrong option. Exit ...\n");
+          exit(-1);
+       }
+d436 1
+a436 1
+       src_addr.sin_port = htons(4000); 
+@
+
+
+1.7
+log
+@Work around conntrack/nat issues with udp socket to wrap outgoing tcp.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.6 2011/05/30 19:06:06 oneway Exp $
+d11 6
+a16 3
+# Sample iptables 
+#/sbin/iptables -I INPUT -p udp --dport 12345 -j NFQUEUE --queue-num 3
+#/sbin/iptables -I OUTPUT -p tcp --sport 12345 -j NFQUEUE --queue-num 3
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.5 2011/05/30 04:39:17 oneway Exp oneway $
+d26 1
+d38 2
+d105 20
+d161 1
+d337 4
+a340 3
+        if ( iph->ip_p == 4 ) { // UDP encap'g TCP 
+          iph2 = (struct ip *) ( payload + encl ); 
+          if ( iph2->ip_p == 17 ) { // UDP encap'g TCP 
+d342 2
+a343 1
+ 	    printf("ipip enc UDP recieved, encl=%d\n", encl);
+d345 3
+a347 2
+           pay_len = transform_u2t( (payload + encl), pay_len - encl ) 
+                     + encl;  // return new len
+d349 3
+a351 3
+          } else { 
+	   return nfq_set_verdict(qh, id, NF_ACCEPT, 0, NULL);
+          }
+d353 7
+a359 2
+          pay_len = transform_t2u(payload, pay_len);  // data in newpkt now 
+	  return nfq_set_verdict(qh, id, NF_ACCEPT, pay_len, newpkt);
+d365 2
+d391 16
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.4 2011/05/30 03:24:14 oneway Exp oneway $
+d299 2
+a300 2
+	unsigned int pay_len; 
+        struct ip *iph; 
+d311 1
+d313 12
+a324 3
+        if ( iph->ip_p == 17 ) { // UDP encap'g TCP 
+          pay_len = transform_u2t(payload, pay_len);  // return new len
+	  return nfq_set_verdict(qh, id, NF_ACCEPT, pay_len, payload);
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.3 2011/05/29 22:04:03 oneway Exp oneway $
+d5 9
+a13 1
+  1. Encapsulates outgoing TCP to UDP 
+d103 1
+d123 2
+a124 1
+  /* Debug print */
+a128 2
+  /*  end of debug  */
+#ifdef DEBUG
+d138 2
+a139 2
+  // Get rid of UDP encap, ignore any TCP payload
+  tcpl = tcph->th_off * 4;    // header length only
+@
+
+
+1.3
+log
+@Compiled, untested.
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.2 2011/05/29 21:59:57 oneway Exp oneway $
+d129 1
+d203 1
+d322 1
+a322 1
+        if(argc != 2) {
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d3 1
+a3 1
+  $Id: u2u_transform.c,v 1.1 2011/05/29 21:16:50 oneway Exp oneway $
+d173 1
+a179 4
+  time_t rawt;
+  char *tstr;
+  unsigned key;
+  
+d187 1
+a187 1
+  udph->uh_sum  = 0
+d333 1
+a333 1
+	  printf("Wrong option. Exit ...\n") 
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 1
+a3 1
+  $Id$
+d43 10
+d166 1
+a166 1
+  int i, rndl; 
+d169 1
+a169 1
+  struct pseudo_header phdr; 
+d182 3
+a184 1
+
+d186 5
+a190 12
+  memcpy( (char *)tcph, data+sizeof(struct ip), ip_len - sizeof(struct ip) );
+
+
+  /* Debug print 
+      printf("\nTCP ack= %u\n", ntohl(tcph->th_ack)) ; 
+      printf("\ntcph->th_off= %u\n", tcph->th_off) ; 
+      printf("\ntcph->th_x2= %u\n", tcph->th_x2) ; 
+      printf("\niph->ip_len= %u\n", ntohs(iph->ip_len)) ; 
+  */
+  // Transform 1: incoming ACK to SYN 
+  strcpy( sip, inet_ntoa(iph->ip_src) ); 
+  strcpy( dip, inet_ntoa(iph->ip_dst) ); 
+d192 1
+a192 1
+  if (tcph->th_flags == 0x10 ) {
+d203 2
+a204 9
+      tcph->th_flags = 0x02; 
+      tcph->th_ack = htonl(0);
+      lastseq = ntohl(tcph->th_seq);    //save it for matching the return SYN/ACK 
+      tcph->th_off = 0x7;   // added 4x2 bytes of TCP option
+      tcph->th_x2 = 0;
+      // append tcp option 
+      memcpy( (unsigned char *)tcph+sizeof(struct tcphdr), opt, 8);  
+      ip_len =  sizeof(struct ip) +  sizeof(struct tcphdr) + 8; 
+      iph->ip_len = htons(ip_len);   // new packet length
+d208 17
+a224 28
+  // Transform 2: when stateful, outgoing SYN/ACK to PSH/ACK, 
+  //              if the incoming one is ACK
+  //             otherwise 
+  // also set ip_id to random number. 
+  } else if (   ( tcph->th_flags == 0x12 && ntohl(tcph->th_ack) -1 == lastseq 
+                                         && stateful == 1 )
+             || ( tcph->th_flags == 0x12 && stateful == 0 ) ) { 
+#ifdef DEBUG
+      time ( &rawt );
+      tstr = ctime( &rawt );
+      for (i=4; i<strlen(tstr)-5; i++) putchar(tstr[i]);
+      printf("TCP: %s:%d -> %s:%d\n", 
+             sip, ntohs(tcph->th_sport), 
+             dip, ntohs(tcph->th_dport) );  
+      printf("TCP flag in: %02x TCP flag out: %02x\n", tcph->th_flags, 
+               TH_ACK|TH_PUSH); 
+#endif
+      tcph->th_flags = 0x18; 
+      tcph->th_off = 0x5;   // cut off TCP option
+      tcph->th_x2 = 0;
+      rndl = rand()%256; 
+      for (i=0; i<rndl; i++) rndc[i] = rand()%256;
+      memcpy( (unsigned char *)tcph+sizeof(struct tcphdr), rndc, rndl);  
+      ip_len =  sizeof(struct ip) +  sizeof(struct tcphdr) + rndl;
+      iph->ip_len = htons(ip_len);   // new packet length
+      iph->ip_id = rand(); 
+      iph->ip_sum = 0;
+      iph->ip_sum = in_checksum((unsigned short*)iph, sizeof(struct ip));
+d226 1
+a226 33
+  } else { 
+#ifdef DEBUG
+      time ( &rawt );
+      tstr = ctime( &rawt );
+      for (i=4; i<strlen(tstr)-5; i++) putchar(tstr[i]);
+      printf("TCP: %s:%d -> %s:%d\n", 
+             sip, ntohs(tcph->th_sport), 
+             dip, ntohs(tcph->th_dport) );  
+      printf("No transform. TCP flag in: %02x TCP flag out: %02x\n", tcph->th_flags, 
+               tcph->th_flags); 
+#endif
+      return ip_len;  // do nothing
+  }
+
+  // Recalculate tcp checksum
+  tcph->th_sum = 0;
+  phdr.source_address =  iph->ip_src.s_addr; 
+  phdr.dest_address =  iph->ip_dst.s_addr; 
+  phdr.placeholder = 0;
+  phdr.protocol = IPPROTO_TCP;
+  phdr.tcp_length = htons( ip_len - sizeof(struct ip) );
+  memcpy(&phdr.tcp, (unsigned char *)tcph, sizeof(struct tcphdr) );
+  memcpy(seudo, &phdr, sizeof(struct pseudo_header) ); 
+  // append tcp option, payload
+  memcpy(seudo + sizeof(struct pseudo_header), 
+         (unsigned char *)tcph+sizeof(struct tcphdr),
+         ip_len-sizeof(struct ip) - sizeof(struct tcphdr) ); 
+
+  tcph->th_sum = in_checksum((unsigned short*)seudo,
+       sizeof(struct pseudo_header) + ip_len         //pseudo-hdr + payload
+       - sizeof(struct ip) - sizeof(struct tcphdr) );
+
+  return ip_len; 
+d297 1
+a297 6
+        iph = (struct ip *) payload; 
+        if ( iph->ip_p == 17 ) { // UDP encap'g TCP SYN 
+          pay_len = transform_udp(payload, pay_len);  // return new len
+        } else {  // TCP 
+          pay_len = transform_tcp(payload, pay_len);  // return new len
+        }
+d303 9
+a311 1
+	return nfq_set_verdict(qh, id, NF_ACCEPT, pay_len, payload);
+d319 1
+a319 1
+	int fd;
+d324 2
+a325 3
+          printf("Usage: %s <-s|-u> \n", argv[0]);
+          printf("       -s: transform psh/ack after seeing ack in\n"); 
+          printf("       -u: transform psh/ack anyway (default) \n"); 
+d330 2
+a331 2
+       if ( strncmp (argv[1], "-s", 2) == 0 ) {
+          stateful = 1; 
+d333 1
+a333 1
+	  printf("Stateful tranform started ...\n");
+d335 3
+d359 2
+a360 2
+	printf("binding this socket to queue '0'\n");
+	qh = nfq_create_queue(h,  0, &cb, NULL);
+@

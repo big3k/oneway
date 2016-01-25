@@ -1,0 +1,54 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "socket", "test\socket\socket.vcproj", "{E5B43F49-10F5-4114-B81D-EF7ED1450175}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "http", "test\http\http.vcproj", "{6F8C2D5F-CF6C-46F8-B6DC-CDC69047200F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ssdp", "test\ssdp\ssdp.vcproj", "{1673F298-B600-4FA1-A23B-4F53E3088301}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libnat", "libnat\libnat.vcproj", "{11027192-5427-4727-80C9-7E741C215DE6}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sample", "sample\sample.vcproj", "{3C6E8E51-27FF-455D-97C3-40D39D324E96}"
+	ProjectSection(ProjectDependencies) = postProject
+		{11027192-5427-4727-80C9-7E741C215DE6} = {11027192-5427-4727-80C9-7E741C215DE6}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{E5B43F49-10F5-4114-B81D-EF7ED1450175}.Debug.ActiveCfg = Debug|Win32
+		{E5B43F49-10F5-4114-B81D-EF7ED1450175}.Debug.Build.0 = Debug|Win32
+		{E5B43F49-10F5-4114-B81D-EF7ED1450175}.Release.ActiveCfg = Release|Win32
+		{E5B43F49-10F5-4114-B81D-EF7ED1450175}.Release.Build.0 = Release|Win32
+		{6F8C2D5F-CF6C-46F8-B6DC-CDC69047200F}.Debug.ActiveCfg = Debug|Win32
+		{6F8C2D5F-CF6C-46F8-B6DC-CDC69047200F}.Debug.Build.0 = Debug|Win32
+		{6F8C2D5F-CF6C-46F8-B6DC-CDC69047200F}.Release.ActiveCfg = Release|Win32
+		{6F8C2D5F-CF6C-46F8-B6DC-CDC69047200F}.Release.Build.0 = Release|Win32
+		{1673F298-B600-4FA1-A23B-4F53E3088301}.Debug.ActiveCfg = Debug|Win32
+		{1673F298-B600-4FA1-A23B-4F53E3088301}.Debug.Build.0 = Debug|Win32
+		{1673F298-B600-4FA1-A23B-4F53E3088301}.Release.ActiveCfg = Release|Win32
+		{1673F298-B600-4FA1-A23B-4F53E3088301}.Release.Build.0 = Release|Win32
+		{11027192-5427-4727-80C9-7E741C215DE6}.Debug.ActiveCfg = Debug|Win32
+		{11027192-5427-4727-80C9-7E741C215DE6}.Debug.Build.0 = Debug|Win32
+		{11027192-5427-4727-80C9-7E741C215DE6}.Release.ActiveCfg = Release|Win32
+		{11027192-5427-4727-80C9-7E741C215DE6}.Release.Build.0 = Release|Win32
+		{3C6E8E51-27FF-455D-97C3-40D39D324E96}.Debug.ActiveCfg = Debug|Win32
+		{3C6E8E51-27FF-455D-97C3-40D39D324E96}.Debug.Build.0 = Debug|Win32
+		{3C6E8E51-27FF-455D-97C3-40D39D324E96}.Release.ActiveCfg = Release|Win32
+		{3C6E8E51-27FF-455D-97C3-40D39D324E96}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

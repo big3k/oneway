@@ -1,0 +1,32 @@
+POST /upnp/2571e2c7-abca-aef7-7ee13cfcb39ac07f/WANIPConn1.ctl HTTP/1.1
+HOST: 192.168.1.1:2555
+SOAPACTION: "urn:schemas-upnp-org:service:WANIPConnection:1#GetExternalIPAddress"
+CONTENT-TYPE: text/xml ; charset="utf-8"
+Content-Length:   312
+
+<?xml version="1.0" encoding="utf-8"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" 
+s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<s:Body>
+<u:GetExternalIPAddress xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">
+</u:GetExternalIPAddress>
+</s:Body>
+</s:Envelope>
+
+HTTP/1.1 200 OK
+CONTENT-LENGTH: 337
+CONTENT-TYPE: text/xml; charset="utf-8"
+LAST-MODIFIED: Sun, 09 Jan 2011 20:31:40 GMT
+DATE: Sun, 09 Jan 2011 20:31:40 GMT
+SERVER: OpenRG/4.0.16.1.56.0.10.14.0 UPnP/1.0 Actiontec/RG_VERSION
+CONNECTION: close
+EXT: 
+
+
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" 
+s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<s:Body><u:GetExternalIPAddressResponse 
+xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">
+<NewExternalIPAddress>173.64.113.167</NewExternalIPAddress>
+</u:GetExternalIPAddressResponse></s:Body></s:Envelope>
+

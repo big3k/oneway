@@ -1,0 +1,17 @@
+No.     Time        Source                Destination           Protocol Info
+     29 12.150548   192.168.1.4           239.255.255.250       SSDP     M-SEARCH * HTTP/1.1
+
+Frame 29 (174 bytes on wire, 174 bytes captured)
+Ethernet II, Src: 00:19:b9:4b:bc:13 (00:19:b9:4b:bc:13), Dst: 01:00:5e:7f:ff:fa (01:00:5e:7f:ff:fa)
+Internet Protocol, Src: 192.168.1.4 (192.168.1.4), Dst: 239.255.255.250 (239.255.255.250)
+User Datagram Protocol, Src Port: 4991 (4991), Dst Port: 1900 (1900)
+Hypertext Transfer Protocol
+    M-SEARCH * HTTP/1.1\r\n
+        Request Method: M-SEARCH
+        Request URI: *
+        Request Version: HTTP/1.1
+    MX: 2\r\n
+    HOST: 239.255.255.250:1900\r\n
+    MAN: "ssdp:discover"\r\n
+    ST: urn:schemas-upnp-org:service:WANIPConnection:1\r\n
+    \r\n

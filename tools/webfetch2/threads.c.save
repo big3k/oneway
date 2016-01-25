@@ -1,0 +1,119 @@
+#include <windows.h>
+#include <winsock.h>
+#include <process.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
+
+#include <curl/curl.h>
+#include "webfetch.h"
+#include "threads.h"
+
+DWORD WINAPI tcp_proc( LPVOID lpParam ) {  
+   int *i; 
+   char sport[MAXTEXT]; 
+   DWORD termEventResult; 
+   int iResult;
+   struct sockaddr_in addrinfo *result = NULL,
+                   *ptr = NULL,
+                    hints;
+   SOCKET ConnectSocket = INVALID_SOCKET;
+
+   i = (int)lpParam; 
+
+   snprintf(sport, MAXTEXT, "%d", port[*i]); 
+   ZeroMemory( &hints, sizeof(hints) );
+   hints.ai_family = AF_UNSPEC;
+   hints.ai_socktype = SOCK_STREAM;
+   hints.ai_protocol = IPPROTO_TCP;
+
+   iResult = getaddrinfo(ipstr[*i], sport, &hints, &result);
+
+   ptr=result;
+
+   ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
+
+   for (;;) { 
+     printf("TCP thread %d\n", *i); 
+
+     iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
+     
+     termEventResult = WaitForSingleObject(termEvent, 2000); 
+     switch(termEventResult) { 
+       case WAIT_OBJECT_0:
+         printf("TCP thread %d exiting ...\n", *i); 
+         fflush(stdout);
+         iResult = shutdown(ConnectSocket, SD_SEND);
+         _endthread(); 
+         break; 
+       default: 
+         printf("TCP thread %d continue ...\n", *i); 
+         fflush(stdout);
+         break; 
+     } // end switch 
+
+   } // end for(;;)
+}
+
+DWORD WINAPI udp_proc( LPVOID lpParam ) { 
+   int *i; 
+   i = (int)lpParam; 
+   for (;;) { 
+     printf("UDP thread %d\n", *i); 
+     Sleep(500);
+   } 
+}
+
+static size_t mycb(void *ptr, size_t size, size_t nmemb, void *data) {
+ return size*nmemb; 
+}
+
+DWORD WINAPI http_proc( LPVOID lpParam ) { 
+  char url[MAXTEXT]; 
+  CURL *curl;
+  CURLcode res;
+   int *i;
+   DWORD termEventResult;
+
+   i = (int)lpParam;
+   snprintf(url, MAXTEXT, "http://%s", ipstr[*i]); 
+   printf("HTTP thread %d, url=%s\n", *i, url);
+     curl = curl_easy_init();
+     curl_easy_setopt(curl, CURLOPT_URL, url); 
+     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, mycb); 
+     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla-agent/1.0");
+
+   for (;;) {
+     res = curl_easy_perform(curl);
+     if (res==0) {
+       printf("HTTP thread fetching ok\n"); 
+     } else { 
+       printf("HTTP thread fetching error: %d\n", res); 
+     }
+     fflush(stdout); 
+     // check if told to quit
+     termEventResult = WaitForSingleObject(termEvent, 2000);
+     switch(termEventResult) {
+       case WAIT_OBJECT_0:
+         printf("HTTP thread %d exiting ...\n", *i);
+         fflush(stdout);
+         curl_easy_cleanup(curl);
+         _endthread();
+         break;
+       default:
+         printf("HTT thread %d continue ...\n", *i);
+         fflush(stdout);
+         break;
+     } // end switch
+
+   } // end for(;;)
+}
+
+DWORD WINAPI dns_proc( LPVOID lpParam ) { 
+   int *i; 
+   i = (int)lpParam; 
+   for (;;) { 
+     printf("DNS thread %d\n", *i); 
+     Sleep(500);
+   }
+}

@@ -1,0 +1,98 @@
+head	1.4;
+access;
+symbols;
+locks
+	yudong:1.4; strict;
+comment	@ * @;
+
+
+1.4
+date	2011.02.17.04.30.25;	author yudong;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2011.02.15.04.19.59;	author yudong;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2011.02.11.18.23.47;	author yudong;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2011.02.10.04.52.37;	author yudong;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@Ready for production.
+@
+text
+@
+#define MAXTHREADS 2000
+#define MAXLINES 1000
+#define MAXTEXT  256
+#define RELOAD_PERIOD   7200    // how often to reload config file, in sec
+
+// global data for threads to access
+
+  char proto[MAXLINES][MAXTEXT];
+  char ipstr[MAXLINES][MAXTEXT];
+  int  port[MAXLINES];
+  int  intensity[MAXLINES];
+  int  Nconfig;  
+
+
+struct MemoryStruct {
+  char *memory;
+  size_t size;
+};
+
+static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data); 
+
+int get_config(void);  
+int dec_config(char *buf, int len);   // same for both decoding and encoding
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+
+
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d5 1
+a5 1
+#define RELOAD_PERIOD   30     // how often to reload config file, in sec
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d5 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d22 5
+a26 1
+int get_config(void); 
+@

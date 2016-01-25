@@ -1,0 +1,409 @@
+
+<html>
+<head>
+<title>NT Kernel Resources: Windows Internals FAQ</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<script type="text/javascript">
+<!--
+
+
+function newImage(arg) {
+	if (document.images) {
+		rslt = new Image();
+		rslt.src = arg;
+		return rslt;
+	}
+}
+
+function changeImages() {
+	if (document.images && (preloadFlag == true)) {
+		for (var i=0; i<changeImages.arguments.length; i+=2) {
+			document[changeImages.arguments[i]].src = changeImages.arguments[i+1];
+		}
+	}
+}
+
+var preloadFlag = false;
+function preloadImages() {
+	if (document.images) {
+		index_08_over = newImage("images/btnHome-over.jpg");
+		index_11_over = newImage("images/btnNews-over.jpg");
+		index_13_over = newImage("images/btnWP-over.jpg");
+		index_14_over = newImage("images/btnProducts-over.jpg");
+		index_15_over = newImage("images/btnForum-over.jpg");
+		index_16_over = newImage("images/btnResources-over.jpg");
+		index_17_over = newImage("images/btnLinks-over.jpg");
+		index_18_over = newImage("images/btnServices-over.jpg");
+
+		menu0 = newImage("images/slideHome.jpg");
+		menu1 = newImage("images/slideNews.jpg");
+		menu2 = newImage("images/slideWP.jpg");
+		menu3 = newImage("images/slideProducts.jpg");
+		menu4 = newImage("images/slideForum.jpg");
+		menu5 = newImage("images/slideResources.jpg");
+		menu6 = newImage("images/slideLinks.jpg");
+		menu7 = newImage("images/slideServices.jpg");
+
+		preloadFlag = true;
+	}
+}
+
+// -->
+</script>
+</head>
+<body bgcolor="#FFFFFF" link="#800080" vlink="#800080" leftmargin="0" topmargin="0" rightmargin="0" bottommargin="0" marginwidth="0" marginheight="0" onload="preloadImages();">
+<table id="Table_01" width="100%" border="0" cellpadding="0" cellspacing="0" height="100%">
+	<tr>
+		<td valign="top" height="77" width="133">
+			<img src="images/index_01.jpg" width="133" height="77" alt=""></td>
+		<td valign="top" height="77" width="20">
+			<img src="images/index_02.jpg" width="20" height="77" alt=""></td>
+		<td rowspan="2" colspan="2" valign="top" background="images/index_04.jpg">
+			<img src="images/index_03.jpg" width="563" height="77" alt=""><br>
+			<img src="images/index_07.jpg" width="563" height="23" alt=""></td>
+	</tr>
+	<tr>
+		<td height="23" valign="top" width="133">
+			<img src="images/index_05.jpg" width="133" height="23" alt=""></td>
+		<td rowspan="2" valign="top" width="20">
+			<img name="index_06" src="images/slideHome.jpg" width="20" height="255"></td>
+	</tr>
+	<tr>
+		<td valign="top" width="133">
+			<a href="index.php"
+				onmouseover="changeImages('index_08', 'images/btnHome-over.jpg'); return true;"
+				onmouseout="changeImages('index_08', 'images/btnHome.jpg'); return true;">
+				<img name="index_08" src="images/btnHome.jpg" width="133" border="0"></a><br>
+			<a href="news.php"
+				onmouseover="changeImages('index_11', 'images/btnNews-over.jpg', 'index_06', 'images/slideNews.jpg');return true;"
+				onmouseout="changeImages('index_11', 'images/btnNews.jpg', 'index_06', 'images/slideHome.jpg'); return true;">
+				<img name="index_11" src="images/btnNews.jpg" width="133" border="0" alt=""></a><br>
+			<a href="wprod.php?ids=2"
+				onmouseover="changeImages('index_13', 'images/btnWP-over.jpg', 'index_06', 'images/slideWP.jpg'); return true;"
+				onmouseout="changeImages('index_13', 'images/btnWP.jpg', 'index_06', 'images/slideHome.jpg'); return true;">
+				<img name="index_13" src="images/btnWP.jpg" width="133" border="0" alt=""></a><br>
+			<a href="wprod.php?ids=1"
+				onmouseover="changeImages('index_14', 'images/btnProducts-over.jpg', 'index_06', 'images/slideProducts.jpg'); return true;"
+				onmouseout="changeImages('index_14', 'images/btnProducts.jpg', 'index_06', 'images/slideHome.jpg'); return true;">
+				<img name="index_14" src="images/btnProducts.jpg" width="133" border="0" alt=""></a><br>
+			<a href="/forum/"
+				onmouseover="changeImages('index_15', 'images/btnForum-over.jpg', 'index_06', 'images/slideForum.jpg'); return true;"
+				onmouseout="changeImages('index_15', 'images/btnForum.jpg', 'index_06', 'images/slideHome.jpg'); return true;">
+				<img name="index_15" src="images/btnForum.jpg" width="133" border="0" alt=""></a><br>
+			<a href="wprod.php?ids=3"
+				onmouseover="changeImages('index_16', 'images/btnResources-over.jpg', 'index_06', 'images/slideResources.jpg'); return true;"
+				onmouseout="changeImages('index_16', 'images/btnResources.jpg', 'index_06', 'images/slideHome.jpg'); return true;">
+				<img name="index_16" src="images/btnResources.jpg" width="133" border="0" alt=""></a><br>
+			<a href="index.php?mode=links"
+				onmouseover="changeImages('index_17', 'images/btnLinks-over.jpg', 'index_06', 'images/slideLinks.jpg'); return true;"
+				onmouseout="changeImages('index_17', 'images/btnLinks.jpg', 'index_06', 'images/slideHome.jpg'); return true;">
+				<img name="index_17" src="images/btnLinks.jpg" width="133" border="0" alt=""></a><br>
+			<a href="index.php?mode=services"
+				onmouseover="changeImages('index_20', 'images/btnServices-over.jpg', 'index_06', 'images/slideServices.jpg'); return true;"
+				onmouseout="changeImages('index_20', 'images/btnServices.jpg', 'index_06', 'images/slideHome.jpg'); return true;">
+				<img name="index_20" src="images/btnServices.jpg" width="133" border="0" alt=""></a><img src="images/btn_20.jpg" border="0">
+<br>
+<!-- SiteSearch Google -->
+<form method="get" action="http://www.ntkernel.com/search.php" target="_top">
+<table border="0" bgcolor="#ffffff">
+<tr><td nowrap="nowrap" valign="top" align="left" height="32">
+<a href="http://www.google.com/">
+<img src="http://www.google.com/logos/Logo_25wht.gif" border="0" alt="Google" align="middle" width="75" height="32"></img></a>
+<br/>
+<input type="hidden" name="domains" value="ntkernel.com"></input>
+<input size=12 maxlength=255 name=q style="width:123; align:center; float:right" value=""></td></tr>
+<tr>
+<td nowrap="nowrap">
+<table width="127">
+<tr>
+<td width="121">
+<input type="radio" name="sitesearch" value=""></input><font style="FONT-SIZE: 8px" face="Verdana" color="#904d4d">Web</font>
+<input type="radio" name="sitesearch" value="ntkernel.com" checked="checked"><font style="FONT-SIZE: 8px" face="Verdana" color="#904d4d">ntkernel.com</font>
+</td>
+</tr>
+</table>
+<input type="submit" name="sa" value="Search" style="text-decoration:none; float:right; color:#904D4D; background-color:#FFFFFF"></input>
+<input type="hidden" name="client" value="pub-4869979872813160"></input>
+<input type="hidden" name="forid" value="1"></input>
+<input type="hidden" name="ie" value="windows-1251"></input>
+<input type="hidden" name="oe" value="windows-1251"></input>
+<input type="hidden" name="cof" value="GALT:#904D4D;GL:1;DIV:#336699;VLC:904D4D;AH:center;BGC:FFFFFF;LBGC:336699;ALC:904D4D;LC:904D4D;T:000000;GFNT:904D4D;GIMP:904D4D;FORID:11"></input>
+<input type="hidden" name="hl" value="en"></input>
+</td></tr></table>
+</form>
+<!-- SiteSearch Google -->
+<a href="http://www.projectloki.com/">
+<img src="http://www.ntkernel.com/LokiBan.gif" border="0" hspace="7" alt="Loki Network Project" align="left"></img></a>
+</td>
+<td valign="top">
+	<img src="images/topWP.jpg" width="233" height="29"><br>
+	<table width=100% border=0>
+	<tr><td align=right bgcolor="#E5CDCD"><font face="Verdana" size=2 color=#904D4D><b>Windows Internals FAQ&nbsp;&nbsp;</b></font></td></tr>
+	</table>
+<font face="Verdana" style="font-size:12px;"><H2 align=center><FONT face=Verdana size=2>Frequently Asked Questions</FONT></H2>
+<P align=center><FONT face=Verdana size=2>Copyright (C) </FONT><A href="http://www.ntkernel.com/"><FONT face=Verdana size=2>www.ntkernel.com</FONT></A><FONT face=Verdana size=2> 2000-2005 </FONT></P>
+<P align=center><FONT face=Verdana size=2>(prepared using NT Kernel Resources web BBS materials)</FONT></P><FONT face=Verdana size=2>
+<HR>
+</FONT>
+<P></P>
+<P><FONT face=Verdana size=2><STRONG><EM>Q: </EM></STRONG>How to install Windows NDIS intermediate driver based on Windows 2000 PASSTHRU sample on Windows 98?</FONT></P>
+<P><FONT face=Verdana size=2><STRONG><EM>A:</EM></STRONG> You can use use the INF file below:</FONT></P><PRE><!--StartFragment --><FONT size=2><FONT color=green><SPAN class=postbody>;---------------------------------------------------------------------------; <BR>; ; <BR>; PASSTHRU.INF ; <BR>; ; <BR>; Windows 98 Installation for NDIS Intermediate Driver example PASSTHRU.SYS ; <BR>; Based largely on NETLANE.INF ; <BR>; ; <BR>; Copyright (c) 1993-2000, Microsoft Corporation ; <BR>; ; <BR>;---------------------------------------------------------------------------; <BR><BR>[version] <BR>signature="$CHICAGO$" <BR>Class=NetTrans <BR>ClassGUID={4d36e975-e325-11ce-bfc1-08002be10318} <BR>provider=%V_MS% <BR>DriverVer=08/24/2000 <BR><BR><BR>[Manufacturer] <BR>%V_MS%=MS <BR><BR><BR>[MS] <BR>%PASSTHRU.DeviceDesc%= PASSTHRU.ndi, PASSTHRU <BR>%PASSMINI.DeviceDesc%= PASSMINI.ndi, PASSMINI <BR><BR><BR>[ControlFlags] <BR>ExcludeFromSelect=PASSMINI <BR><BR>[SourceDiskNames] <BR>1=,,, <BR><BR>[SourceDiskFiles] <BR>Passthru.sys=1,, <BR>Passthru.inf=1,, <BR><BR>;---------------------------------------------------------------------------; <BR>; PASSTHRU -- Protocol edge ; <BR>;---------------------------------------------------------------------------; <BR><BR>[PASSTHRU.ndi] <BR>CopyFiles=PASSTHRU.Inf.CopyFiles <BR>AddReg=PASSTHRU.ndi.reg <BR>DeviceID=PASSTHRU <BR>MaxInstance=4 <BR>DriverVer=06/08/2000 <BR><BR><BR>[PASSTHRU.ndi.reg] <BR>HKR,Ndi,DeviceID,,PASSTHRU <BR>HKR,Ndi,MaxInstance,,8 <BR>HKR,Ndi,NetType,,1 <BR>HKR,NDIS,LogDriverName,,PASSTHRU <BR>HKR,NDIS,MiniportLogDriverName,,PASSMINI <BR>HKR,NDIS,MajorNdisVersion,1,03 <BR>HKR,NDIS,MinorNdisVersion,1,0A <BR>HKR,Ndi\Interfaces,DefUpper,,"PASSTHRU" <BR>HKR,Ndi\Interfaces,DefLower,,"ndis3,ndis4,ndis5" <BR>HKR,Ndi\Interfaces,UpperRange,,"PASSTHRU" <BR>HKR,Ndi\Interfaces,LowerRange,,"ndis3,ndis4,ndis5" <BR>HKR,Ndi\InstallInf,,"PassThru.inf" <BR>HKR,Ndi\Install,,,"PASSTHRU.Install" <BR>HKR,Ndi\Remove,,,"PASSTHRU.Remove" <BR>HKR,Ndi,HelpText,,%PASSTHRU_HELP% <BR>HKR,Ndi\Compatibility,RequireAll,,"PASSMINI" <BR><BR><BR>[PASSTHRU.Install] <BR>AddReg=PASSTHRU.AddReg, PASSTHRU.IMDevNode.AddReg <BR>CopyFiles=PASSTHRU.CopyFiles <BR><BR><BR>[PASSTHRU.AddReg] <BR>HKR,,DevLoader,,*ndis <BR>HKR,,DeviceVxDs,,passthru.sys <BR>HKR,,IntermediateProtocol,,1 <BR><BR><BR>[PASSTHRU.IMDevNode.AddReg] <BR>HKLM,System\CurrentControlSet\Services\Class\Ndis <BR>HKLM,System\CurrentControlSet\Services\Class\Ndis,,,"Network intermediate drivers" <BR>HKLM,System\CurrentControlSet\Services\Class\Ndis,Icon,,"-6" <BR>HKLM,System\CurrentControlSet\Services\Class\Ndis,NoUseClass,,"1" <BR>HKLM,System\CurrentControlSet\Services\Class\Ndis,DevLoader,,"*ndis" <BR>HKLM,Enum\Root\NDIS\PASSTHRU <BR>HKLM,Enum\Root\NDIS\PASSTHRU,DeviceDesc,,"PASSTHRU Protocol driver" <BR>HKLM,Enum\Root\NDIS\PASSTHRU,Class,,"Ndis" <BR>HKLM,Enum\Root\NDIS\PASSTHRU,ConfigFlags,1,10,00,00,00 <BR>HKLM,Enum\Root\NDIS\PASSTHRU,Driver,,"Ndis" <BR><BR><BR>[PASSTHRU.IMDevNode.DelReg] <BR>HKLM,Enum\Root\NDIS\PASSTHRU <BR><BR><BR>[PASSTHRU.CopyFiles] <BR>Passthru.sys,,,2 <BR><BR>[PASSTHRU.Inf.CopyFiles] <BR>Passthru.inf,,,2 <BR><BR>[PASSTHRU.Remove] <BR>DelReg=PASSTHRU.IMDevNode.DelReg <BR><BR>;---------------------------------------------------------------------------; <BR>; PASSMINI -- Miniport edge ; <BR>;---------------------------------------------------------------------------; <BR><BR>[PASSMINI.ndi] <BR>AddReg=PASSMINI.ndi.reg <BR>DeviceID=PASSMINI <BR>MaxInstance=8 <BR>DriverVer=06/08/2000 <BR><BR><BR>[PASSMINI.ndi.reg] <BR>HKR,Ndi,DeviceID,,PASSMINI <BR>HKR,Ndi,MaxInstance,,8 <BR>HKR,NDIS,LogDriverName,,PASSMINI <BR>HKR,NDIS,MajorNdisVersion,1,03 <BR>HKR,NDIS,MinorNdisVersion,1,0A <BR>HKR,Ndi\Interfaces,DefUpper,,"ndis3,ndis4,ndis5" <BR>HKR,Ndi\Interfaces,DefLower,,"PASSTHRU" <BR>HKR,Ndi\Interfaces,UpperRange,,"ndis3,ndis4,ndis5" <BR>HKR,Ndi\Interfaces,LowerRange,,"PASSTHRU" <BR>HKR,Ndi\Install,,,"PASSMINI.Install" <BR>HKR,Ndi\Remove,,,"PASSMINI.Remove" <BR>HKR,Ndi,HelpText,,%PASSMINI_HELP% <BR>HKR,Ndi\Compatibility,RequireAll,,"PASSTHRU" <BR><BR><BR>[PASSMINI.Install] <BR>AddReg=PASSMINI.AddReg <BR>CopyFiles=PASSMINI.CopyFiles <BR><BR><BR>[PASSMINI.AddReg] <BR>HKR,,DevLoader,,*ndis <BR>HKR,,DeviceVxDs,,passthru.sys <BR>HKR,,RealClass,,Net <BR><BR><BR>[PASSMINI.CopyFiles] <BR><BR>[PASSMINI.Remove] <BR>AddReg=PASSMINI.Rmv.AddReg <BR><BR>[PASSMINI.Rmv.AddReg] <BR><BR>;---------------------------------------------------------------------------; <BR>; DIRECTORIES and STRINGS ; <BR>;---------------------------------------------------------------------------; <BR><BR>[DestinationDirs] <BR>DefaultDestDir = 11 <BR>PASSTHRU.CopyFiles = 11 <BR>PASSTHRU.Inf.CopyFiles = 17 <BR>PASSMINI.CopyFiles = 11 <BR><BR><BR>[strings] <BR>V_MS="Microsoft" <BR>V_CLASSNAME="Network Protocol" <BR>PASSTHRU.DeviceDesc="PASSTHRU Protocol" <BR>PASSTHRU_HELP="This implements the protocol edge of the PASSTHRU NDIS Intermedate Driver example." <BR>PASSMINI.DeviceDesc="PASSTHRU Miniport" <BR>PASSMINI_HELP="This creates the miniport edge of the PASSTHRU NDIS Intermedate Driver example."</SPAN> </FONT></FONT></PRE>
+<P><FONT face=Verdana size=2><EM><STRONG>Q: </STRONG></EM>Where can I get the definition of <FONT color=#008000>NDIS_PROTOCOL_BLOCK</FONT> structure? Does it depend of Windows version or NDIS version?</FONT></P>
+<P><FONT face=Verdana size=2><STRONG><EM>A:</EM></STRONG> <FONT color=#008000>_NDIS_PROTOCOL_BLOCK</FONT> structure definition depends of Windows and NDIS versions and it's just partially documented by Microsoft. Some it's definitions can be found in ndis.h. An example, for Windows XP NDIS_PROTOCOL_BLOCK defined as the following:</FONT></P><PRE><FONT face="Courier New" color=#008000 size=2>struct _NDIS_PROTOCOL_BLOCK 
+{ 
+  _NDIS_OPEN_BLOCK* 			OpenQueue; 
+  _REFERENCE 				Ref;
+  _KEVENT* 				DeregEvent; 
+  _NDIS_PROTOCOL_BLOCK* 		NextProtocol; 
+  _NDIS50_PROTOCOL_CHARACTERISTICS 	ProtocolCharacteristics; 
+  _WORK_QUEUE_ITEM 			WorkItem; 
+  _KMUTANT 				Mutex; 
+  DWORD 				MutexOwner; 
+  _UNICODE_STRING* 			BindDeviceName; 
+  _UNICODE_STRING* 			RootDeviceName; 
+  _NDIS_M_DRIVER_BLOCK* 		AssociatedMiniDriver; 
+  _NDIS_MINIPORT_BLOCK* 		BindingAdapter; 
+}; </FONT></PRE>
+<P><FONT face=Verdana size=2>But in ndis.h for Windows ME you can find the following definition: </FONT></P><PRE><FONT face="Courier New" color=#008000 size=2>struct _NDIS_PROTOCOL_BLOCK 
+{
+  PNDIS_OPEN_BLOCK 		    OpenQueue; 	// queue of opens for this protocol 
+  REFERENCE 			    Ref; 	// contains spinlock for OpenQueue 
+  UINT 				    Length;	// of this NDIS_PROTOCOL_BLOCK struct
+  NDIS50_PROTOCOL_CHARACTERISTICS   ProtocolCharacteristics;// handler addresses struct 
+  _NDIS_PROTOCOL_BLOCK * 	    NextProtocol; // Link to next    
+  ULONG 			    MaxPatternSize; 
+#if defined(NDIS_WRAPPER) 
+  //
+  // Protocol filters
+  // 
+  struct    _NDIS_PROTOCOL_FILTER * ProtocolFilter[NdisMediumMax+1];
+  WORK_QUEUE_ITEM 		    WorkItem;	// Used during NdisRegisterProtocol to 
+						// notify protocols of existing drivers.
+  KMUTEX 			    Mutex; 	// For serialization of Bind/Unbind requests 
+  PKEVENT 			    DeregEvent;	// Used by NdisDeregisterProtocol 
+#endif 
+}; </FONT></PRE>
+<P><FONT face=Verdana size=2>As you can see this structure definition depends of <FONT color=#008000>NDIS_PROTOCOL_CHARACTERISTICS</FONT> definition, which is NDIS version dependent. The Windows version dependence does not need any comments.</FONT></P>
+<P></P>
+<P><FONT face=Verdana size=2><STRONG><EM>Q:</EM></STRONG> netbt.sys calls <FONT color=#008000>tcpip!TCPSendData</FONT> directly. How can this be explained? </FONT></P>
+<P><FONT face=Verdana size=2><EM><STRONG>A:</STRONG></EM> Yes, that's true, tcpip.sys can be requested for the pointer to the internal routine tcpip!TCPSendData. You can see the processing of the particular request (IOCTL_TDI_QUERY_DIRECT_SEND_HANDLER) in reversed engineered code of tcpip!TCPDispatch. This interface improves performance of kernel-mode tcpip.sys clients.</FONT></P><PRE><FONT face="Courier New" size=2>
+<FONT color=#008000>TDI_STATUS TCPDispatch(PDEVICE_OBJECT pDeviceObject,PIRP Irp) 
+{ 
+	TDI_STATUS Status; 
+	PIO_STACK_LOCATION irpStack; 
+	
+// try-except exists only in the W2K/XP version of TCPIP.SYS 
+__try 
+{ 
+	// IpMcastDeviceObject exists only in the W2K/XP version of TCPIP.SYS 
+	if (pDeviceObject == IpMcastDeviceObject) 
+		return IpMcastDispatch(pDeviceObject,Irp);
+ 
+	if (pDeviceObject == IPDeviceObject) 
+		return IPDispatch(pDeviceObject,Irp); 
+
+	irpStack = IoGetCurrentIrpStackLocation(Irp); 
+	Irp-&gt;IoStatus.Information = 0; 
+
+	switch (irpStack-&gt;MajorFunction) 
+	{ 
+		case IRP_MJ_CREATE: 
+			Status = TCPCreate(pDeviceObject,Irp,irpStack); 
+			break;
+ 
+		case IRP_MJ_CLOSE: 
+			Status = TCPClose(Irp,irpStack); 
+			break;
+
+		case IRP_MJ_WRITE: 
+			Status = STATUS_INVALID_DEVICE_REQUEST; 
+			break;
+
+		case IRP_MJ_DEVICE_CONTROL: 
+			if (NT_SUCCESS(TdiMapUserRequest(pDeviceObject,Irp,irpStack))) 
+				return TCPDispatchInternalDeviceControl(pDeviceObject,Irp); 
+			else 
+			{ 
+				if (irpStack-&gt;Parameters.DeviceIoControl.IoControlCode
+					== IOCTL_TDI_QUERY_DIRECT_SEND_HANDLER)  
+				{ 
+					// exists only in W2K/XP 
+					if (Irp-&gt;RequestorMode == UserMode) 
+						ProbeForWrite (
+						irpStack-&gt;Parameters.DeviceIoControl.Type3InputBuffer,
+						sizeof(PULONG),
+						4
+						);  
+						
+					irpStack-&gt;Parameters.DeviceIoControl.Type3InputBuffer 
+						= TCPSendData; 
+					Status = STATUS_SUCCESS; 
+				} 
+				else 
+					return TCPDispatchDeviceControl(Irp,irpStack); 
+			} 
+			break;
+ 
+		case IRP_MJ_CLEANUP: 
+			Status = TCPCleanup(pDeviceObject,Irp,irpStack); 
+			break;
+ 
+		case IRP_MJ_QUERY_SECURITY: 
+			Status = STATUS_INVALID_DEVICE_REQUEST; 
+			break; 
+
+		case IRP_MJ_SYSTEM_CONTROL: // exists only in W2K/XP 
+			return TCPEventTraceControl(pDeviceObject,Irp);
+ 
+		case IRP_MJ_PNP_POWER: // exists only in W2K/XP 
+			Status = TCPDispatchPnPPower(Irp,irpStack); 
+			break; 
+
+		default: 
+			Status = STATUS_INVALID_DEVICE_REQUEST; 
+	} 
+} 
+__except(EXCEPTION_EXECUTE_HANDLER) 
+{ 
+	// does something (I don't know what exactly) in the case of an exception 
+	// ProbeForWrite can rise an exception 
+} 
+	Irp-&gt;IoStatus.Status = Status; 
+	IoCompleteRequest(Irp,IO_NETWORK_INCREMENT); 
+	return Status; 
+} </FONT></PRE>
+<P></P>
+<P><FONT face=Verdana size=2><EM><STRONG>Q: </STRONG></EM>How can I create named pipe in the kernel-mode (<FONT color=#008000>NtCreateNamedPipeFile/ZwCreateNamedPipeFile</FONT> is not exported by ntoskrnl.exe)?</FONT></P>
+<P><FONT face=Verdana size=2><EM><STRONG>A: </STRONG></EM>There are several ways to do this:</FONT></P>
+<UL>
+<LI><FONT face=Verdana size=2>You can call the service through the service index in the Service Descriptor Table (SDT) using INT2E, like ntdll.dll does. </FONT></LI></UL><PRE><FONT face=Verdana size=2>   <FONT color=#008000>.text:77F883D6 public ZwCreateNamedPipeFile 
+   .text:77F883D6 ZwCreateNamedPipeFile proc near 
+   .text:77F883D6 
+   .text:77F883D6 arg_0 = byte ptr 4 
+   .text:77F883D6 
+   .text:77F883D6 mov eax, 26h ; NtCreateNamedPipeFile 
+   .text:77F883DB lea edx, [esp+arg_0] 
+   .text:77F883DF int 2Eh ; DOS 2+ internal - EXECUTE COMMAND 
+   .text:77F883DF ; DS:SI -&gt; counted CR-terminated command string 
+   .text:77F883E1 retn 38h 
+   .text:77F883E1 ZwCreateNamedPipeFile endp </FONT>
+ </FONT></PRE>
+<UL>
+<LI><FONT face=Verdana size=2>You can use the index of NtCreateNamedPipeFile in SDT to obtain service address from SDT (address of SDT is exported by ntoskrnl.exe under KeServiceDescriptorTable name) and then call the service routine in ntoskrnl.exe. </FONT>
+<LI><FONT face=Verdana size=2>Both previously described approaches are universal in that sense that you can do the same for the calling any non-exported service from ntoskrnl.exe. The only disadvantage of them is that you need to know service index in SDT, which is the subject of changes between Windows versions (or even service packs). You can extract this index dynamically from ntdll.dll image to resolve this problem. However, I suppose it's a bit overwork. One more approach to create named pipe in the kernel-mode is to use IoCreateFile routine. The following code works just like NtCreateNamedPipeFile:</FONT> </LI></UL><PRE><FONT face="Courier New" size=2>
+<FONT color=#008000>NTSTATUS  NtCreateNamedPipeFile (
+   			OUT PHANDLE FileHandle,
+   			IN ULONG DesiredAccess,
+			IN POBJECT_ATTRIBUTES ObjectAttributes,
+			OUT PIO_STATUS_BLOCK IoStatusBlock,
+			IN ULONG ShareAccess,
+			IN ULONG CreateDisposition,
+			IN ULONG CreateOptions,
+			IN ULONG NamedPipeType,
+			IN ULONG ReadMode,
+			IN ULONG CompletionMode,
+			IN ULONG MaximumInstances,
+			IN ULONG InboundQuota,
+			IN ULONG OutboundQuota,
+			IN PLARGE_INTEGER DefaultTimeout OPTIONAL 
+			)  
+{   
+	NAMED_PIPE_CREATE_PARAMETERS NamedPipeParms;
+	NTSTATUS Status;
+	__try   
+	{   
+		if ( DefaultTimeout )
+		{
+		   	NamedPipeParms.TimeoutSpecified = TRUE;
+		   	NamedPipeParms.DefaultTimeout.QuadPart = DefaultTimeout-&gt;QuadPart;
+		}
+		else
+		{   
+			NamedPipeParms.TimeoutSpecified = FALSE;
+		} 
+		  
+		NamedPipeParms.NamedPipeType = NamedPipeType;
+		NamedPipeParms.ReadMode = ReadMode;
+		NamedPipeParms.CompletionMode = CompletionMode;
+		NamedPipeParms.MaximumInstances = MaximumInstances;
+		NamedPipeParms.InboundQuota = InboundQuota;
+		NamedPipeParms.OutboundQuota = OutboundQuota;
+		Status = IoCreateFile (
+		   			FileHandle,
+					DesiredAccess,
+					ObjectAttributes,
+					IoStatusBlock,
+					NULL,
+					0,
+					ShareAccess,
+					CreateDisposition,
+					CreateOptions,
+					NULL,
+					0,
+					CreateFileTypeNamedPipe,
+					&amp;NamedPipeParms,
+					0   
+					);
+
+		return Status;
+	}   
+	__except (EXCEPTION_EXECUTE_HANDLER)   
+	{
+	   KdPrint (("NtCreateNamedPipeFile: Exception occured.\n"));
+	   return STATUS_UNSUCCESSFUL;   
+	}
+}    </FONT></FONT></PRE>
+<P><FONT face=Verdana size=2>The routine can be called as the following:</FONT></P><PRE><FONT face="Courier New" color=#008000 size=2>#define NAMED_PIPE_NAME L"\\??\\pipe\\PipeClient"
+...
+// Some code skipped
+...
+	RtlInitUnicodeString ( &amp;namedPipe, NAMED_PIPE_NAME );
+	InitializeObjectAttributes ( 
+		&amp;attr,
+ 		&amp;namedPipe,
+		OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
+    	NULL,
+ 		NULL
+ 		);
+ 	nTimeOut.QuadPart = -1000;
+ 
+// Create Named Pipe
+	ntStatus = NtCreateNamedPipeFile (
+			&amp;g_hNamedPipeHandle,
+ 			FILE_ANY_ACCESS,
+			&amp;attr,
+			&amp;ioStatusBlock,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			FILE_CREATE,
+			0,
+			FILE_PIPE_BYTE_STREAM_TYPE,
+			FILE_PIPE_BYTE_STREAM_MODE,
+		    FILE_PIPE_QUEUE_OPERATION,
+			1,
+			0,
+			0,
+			&amp;nTimeOut
+			);
+
+	if (NT_SUCCESS (ntStatus))
+	{
+		KdPrint (("Pipe created succesfully\n")); 
+	}</FONT></PRE>
+<P><FONT face=Verdana size=2>Please pay attention to two important notes:</FONT></P>
+<UL>
+<LI><FONT face=Verdana size=2>nTimeOut, this parameter is declared as OPTIONAL but at least on my Windows 2000 SP2 box it's required.</FONT> 
+<LI><FONT face=Verdana size=2>When creating named pipe I've specified OBJ_KERNEL_HANDLE attribute. This allows to use named pipe handle in the arbitrary process context in the kernel (if not specified the handle is valid only in the context of creator process). The only problem is that OBJ_KERNEL_HANDLE was introduced Windows 2000 and it does not work in NT 4.0, where the best choice is to create named pipe in the context of System process.</FONT> </LI></UL></FONT></font><td><nobr><font size=10px>&nbsp;&nbsp;</font></nobr></td>
+	</tr>
+	<tr>
+		<td colspan="4" bgcolor="#E5CDCD">
+		<p align="right"><font size=2 color="gray">Copyright &copy; NT Kernel Resources, 2000-2009. Design & Programming by <a href="http://www.thecompany.ru" style="text-decoration:none; color:#909090;">Multi Service</a>&nbsp;</font></td>
+	</tr>
+	</table>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-589814-1";
+urchinTracker();
+</script>
+</body>
+</html>

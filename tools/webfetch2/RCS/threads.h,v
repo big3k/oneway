@@ -1,0 +1,138 @@
+head	1.5;
+access;
+symbols;
+locks
+	yudong:1.5; strict;
+comment	@ * @;
+
+
+1.5
+date	2011.02.15.04.19.54;	author yudong;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2011.02.11.03.47.33;	author yudong;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2011.02.09.04.50.34;	author yudong;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2011.02.07.00.15.18;	author yudong;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2011.02.06.21.38.39;	author yudong;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@
+//DNS header structure
+struct DNS_HEADER
+{
+unsigned short id; // identification number
+ 
+unsigned char rd :1; // recursion desired
+unsigned char tc :1; // truncated message
+unsigned char aa :1; // authoritive answer
+unsigned char opcode :4; // purpose of message
+unsigned char qr :1; // query/response flag
+ 
+unsigned char rcode :4; // response code
+unsigned char cd :1; // checking disabled
+unsigned char ad :1; // authenticated data
+unsigned char z :1; // its z! reserved
+unsigned char ra :1; // recursion available
+ 
+unsigned short q_count; // number of question entries
+unsigned short ans_count; // number of answer entries
+unsigned short auth_count; // number of authority entries
+unsigned short add_count; // number of resource entries
+};
+ 
+//Constant sized fields of query structure
+struct QUESTION
+{
+unsigned short qtype;
+unsigned short qclass;
+};
+
+
+//Structure of a Query
+typedef struct
+{
+unsigned char *name;
+struct QUESTION *ques;
+} QUERY;
+
+HANDLE mainEvent;     // tell main thread to quit
+HANDLE termEvent;     // tell threads of main thread to quit
+
+HANDLE mid;        // main thread id
+
+
+void main_proc( LPVOID lpParam ); 
+void tcp_proc( LPVOID lpParam ); 
+void udp_proc( LPVOID lpParam ); 
+void http_proc( LPVOID lpParam ); 
+void dns_proc( LPVOID lpParam ); 
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d40 2
+a41 1
+HANDLE termEvent;     // tell threads to quit
+d43 4
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d2 38
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d4 4
+a7 4
+DWORD WINAPI tcp_proc( LPVOID lpParam ); 
+DWORD WINAPI udp_proc( LPVOID lpParam ); 
+DWORD WINAPI http_proc( LPVOID lpParam ); 
+DWORD WINAPI dns_proc( LPVOID lpParam ); 
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+@

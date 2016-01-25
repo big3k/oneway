@@ -1,0 +1,20 @@
+No.     Time        Source                Destination           Protocol Info
+     33 13.936879   192.168.1.1           192.168.1.4           SSDP     HTTP/1.1 200 OK
+
+Frame 33 (452 bytes on wire, 452 bytes captured)
+Ethernet II, Src: 00:18:01:dd:6d:0d (00:18:01:dd:6d:0d), Dst: 00:19:b9:4b:bc:13 (00:19:b9:4b:bc:13)
+Internet Protocol, Src: 192.168.1.1 (192.168.1.1), Dst: 192.168.1.4 (192.168.1.4)
+User Datagram Protocol, Src Port: 1900 (1900), Dst Port: 4991 (4991)
+Hypertext Transfer Protocol
+    HTTP/1.1 200 OK\r\n
+        Request Version: HTTP/1.1
+        Response Code: 200
+    DATE: Sun, 09 Jan 2011 20:31:40 GMT\r\n
+    SERVER: OpenRG/4.0.16.1.56.0.10.14.0 UPnP/1.0 Actiontec/RG_VERSION\r\n
+    CONNECTION: close\r\n
+    CACHE-CONTROL: max-age=120\r\n
+    LOCATION: http://192.168.1.1:2555/upnp/e8759cd6-c6fd-d5a7-7280411aaeca7491/desc.xml\r\n
+    EXT: \r\n
+    ST: urn:schemas-upnp-org:service:WANIPConnection:1\r\n
+    USN: uuid:2571e2c7-abca-aef7-7ee13cfcb39ac07f::urn:schemas-upnp-org:service:WANIPConnection:1\r\n
+    \r\n

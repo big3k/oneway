@@ -1,0 +1,467 @@
+head	1.4;
+access;
+symbols;
+locks
+	oneway:1.4; strict;
+comment	@// @;
+
+
+1.4
+date	2011.06.06.18.52.52;	author oneway;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2011.06.06.04.32.44;	author oneway;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2011.06.05.20.47.06;	author oneway;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2011.06.03.02.49.20;	author oneway;	state Exp;
+branches;
+next	;
+
+
+desc
+@performance tweaks.
+@
+
+
+1.4
+log
+@Unified return length (len(plaintext) + 2) of ciphertext.
+@
+text
+@
+// $Id: sj-enc.cpp,v 1.3 2011/06/06 04:32:44 oneway Exp oneway $ 
+// oneway modified a bit to eliminate malloc calls inside 
+// functions for performance,
+// and re-factored into Algorithms 0, 1, 2 and 3.  
+
+//
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+inline char swap_bit(char byte) {
+    unsigned char b = (unsigned char)byte;
+    b = ((b & 0x0f) << 4) | ((b & 0xf0) >> 4);
+    return (char)b;
+}
+
+
+inline void block_encrypt1(char* data, int len, char key) {
+    for (int i = 0; i < len; ++i) {
+        data[i] ^= key;
+    }
+}
+
+inline void block_decrypt1(char* data, int len, char key) {
+    for (int i = 0; i < len; ++i) {
+        data[i] ^= key;
+    }
+}
+
+
+inline void block_encrypt2(char* data, int len, char key) {
+    if (len) {
+      data[0] = data[0] ^ key;
+    }
+    for (int i = 1; i < len; ++i) {
+        data[i] ^= data[i-1];
+        data[i] = swap_bit(data[i]);
+    }
+}
+
+inline void block_decrypt2(char* data, int len, char key) {
+    for (int i = len - 1; i > 0; --i) {
+        data[i] = swap_bit(data[i]);
+        data[i] ^= data[i-1];
+    }
+    if (len) {
+        data[0] ^= key;
+    }
+}
+
+/* En/Decryption routines: 0, 1, 2 and 3.
+   All the routines have the same interface. 
+
+   For encryption, the returned ciphertext is always 2-byte longer than 
+   the input plaintext. For decryption, it is the opposite. 
+
+input: 
+    pack -- pointer to input data buffer
+    len  -- input data size 
+    ret  -- pointer to output data buffer, preallocated, can be re-used. 
+output: 
+    each function returns the new size of the de/encrypted data pointed by ret. 
+
+Note: 
+    The following statement can be used at the beginning of the calling 
+     program  to seed rand(). 
+
+    srand(time(NULL));
+*/
+    
+
+/* no en/decryption at all -- straight copy w/ 2-byte padding */ 
+int EncryptPacket0(char* pack, int len, char* ret) {
+    memcpy(ret, pack, len);
+    ret[len]   =  rand() & 0xff;
+    ret[len+1] =  rand() & 0xff;
+    return len+2; 
+}
+
+
+int DecryptPacket0(char* pack, int len, char* ret) {
+    memcpy(ret, pack, len-2);
+    return len-2; 
+}
+
+/* SJ-enc: rewritten to eliminate malloc calls. */ 
+   
+int EncryptPacket1(char* pack, int len, char* ret) {
+
+    unsigned char pad1 = rand() & 0xff;
+    unsigned char pad2 = rand() & 0xff;
+
+    memcpy(ret, pack, len);
+    block_encrypt1(ret, len, pad1);
+
+    int loc1 = pad2 % len;
+    ret[len] = ret[loc1];
+    ret[loc1] = pad1;
+
+    block_encrypt1(ret, len, pad2);
+
+    unsigned int loc2 = 0;
+    for (int i = 0; i < len / 2; ++i) {
+        loc2 ^= ret[i];
+    }
+    if (len > 1) {
+        loc2 = loc2 % (len / 2);
+    }
+    loc2 += len / 2;
+
+    ret[len+1] = ret[loc2];
+    ret[loc2] = pad2;
+
+    return len+2;
+}
+
+int DecryptPacket1(char* pack, int len, char* ret) {
+    len -= 2;
+
+    //no need:  srand(time(NULL));
+
+    unsigned int loc2 = 0;
+    int i;
+    for (i = 0; i < len / 2; ++i) {
+        loc2 ^= pack[i];
+    }
+
+    if (len > 1) {
+        loc2 = loc2 % (len / 2);
+    }
+    loc2 += len / 2;
+
+    unsigned char pad2 = pack[loc2];
+    pack[loc2] = pack[len + 1];
+    memcpy(ret, pack, len);
+    block_decrypt1(ret, len, pad2);
+
+    int loc1 = pad2 % len;
+    unsigned char pad1 = ret[loc1];
+    ret[loc1] = pack[len];
+    block_decrypt1(ret, len, pad1);
+
+    return len;
+}
+
+int EncryptPacket2(char* pack, int len, char* ret) {
+
+    unsigned char pad1 = rand() & 0xff;
+    unsigned char pad2 = rand() & 0xff;
+
+    memcpy(ret, pack, len);
+    block_encrypt2(ret, len, pad1);
+
+    int loc1 = pad2 % len;
+    ret[len] = ret[loc1];
+    ret[loc1] = pad1;
+
+    block_encrypt2(ret, len, pad2);
+
+    unsigned int loc2 = 0;
+    for (int i = 0; i < len / 2; ++i) {
+        loc2 ^= ret[i];
+    }
+    if (len > 1) {
+        loc2 = loc2 % (len / 2);
+    }
+    loc2 += len / 2;
+
+    ret[len+1] = ret[loc2];
+    ret[loc2] = pad2;
+
+    return len+2;
+}
+
+int DecryptPacket2(char* pack, int len, char* ret) {
+    len -= 2;
+
+
+    unsigned int loc2 = 0;
+    int i;
+    for (i = 0; i < len / 2; ++i) {
+        loc2 ^= pack[i];
+    }
+
+    if (len > 1) {
+        loc2 = loc2 % (len / 2);
+    }
+    loc2 += len / 2;
+
+    unsigned char pad2 = pack[loc2];
+    pack[loc2] = pack[len + 1];
+    memcpy(ret, pack, len);
+    block_decrypt2(ret, len, pad2);
+
+    int loc1 = pad2 % len;
+    unsigned char pad1 = ret[loc1];
+    ret[loc1] = pack[len];
+    block_decrypt2(ret, len, pad1);
+
+    return len;
+}
+
+
+
+/* oneway's en/decryption algorithm. it has to know tcp header  */ 
+
+int DecryptPacket3(char* pack, int len, char* ret) {
+    unsigned i; 
+    unsigned char key;
+    unsigned char pad1; 
+    unsigned char pad2; 
+
+    len=len-2; 
+    pad1 = pack[len]; 
+    pad2 = pack[len+1]; 
+    memcpy(ret, pack, len);
+    key = ( ( pad1 * pad2 ) % 127 ) + 1;
+    for (i=0; i<len; i++) ret[i] = ret[i] ^ key;
+
+    return len; 
+}
+
+int EncryptPacket3(char* pack, int len, char* ret) {
+    unsigned i; 
+    unsigned char key;
+    unsigned char pad1 = rand() & 0xff;
+    unsigned char pad2 = rand() & 0xff;
+
+    key = ( ( pad1 * pad2 ) % 127 ) + 1;
+    memcpy(ret, pack, len);
+    for (i=0; i<len; i++) ret[i] = ret[i] ^ key;
+    ret[len] = pad1; 
+    ret[len+1] = pad2; 
+    
+    return len+2;
+}
+
+
+@
+
+
+1.3
+log
+@added more documentation.
+@
+text
+@d2 1
+a2 1
+// $Id: sj-enc.cpp,v 1.2 2011/06/05 20:47:06 oneway Exp oneway $ 
+d6 1
+a12 2
+#define __FAVOR_BSD
+#include <netinet/tcp.h>
+d56 3
+a58 2
+   0, 1 and 2 are for generic data, while 3 is specifically designed 
+   ofor tcp header.
+d75 1
+a75 1
+/* no en/decryption at all -- straight copy */ 
+d78 3
+a80 1
+    return len; 
+d85 2
+a86 2
+    memcpy(ret, pack, len);
+    return len; 
+d211 1
+a211 1
+    unsigned i, ip_len, newl; 
+d213 6
+a218 3
+    struct tcphdr *tcph = (struct tcphdr *) ret; 
+    ip_len = len + 28;    // payload + ip header + udp header
+    key = ( ( ip_len * ip_len ) % 127 ) + 1;
+d220 1
+a221 6
+  // Get rid of padding  (no padding for PSH/ACK)
+    if (tcph->th_flags != 0x18 ) {
+         newl = tcph->th_off * 4;  // header length only
+    } else {
+         newl = len; 
+    }
+d223 1
+a223 1
+    return newl;
+d227 1
+a227 1
+    unsigned i, ip_len, newl, rndl;
+d229 4
+a232 1
+    struct tcphdr *tcph = (struct tcphdr *) ret;
+d234 3
+a236 10
+    ip_len = len + 28; 
+    newl = len; 
+    if (tcph->th_flags != 0x18 ) {
+     rndl=rand()%15 + 1;    // random padding
+     for (i=0; i<rndl; i++) ret[len+i] = rand()%256; 
+     ip_len = ip_len + rndl; 
+     newl = len + rndl; 
+    } 
+    key = ( ( ip_len * ip_len ) % 127 ) + 1;
+    for (i=0; i<newl; i++) ret[i] = ret[i] ^ key;
+d238 1
+a238 1
+    return newl;
+@
+
+
+1.2
+log
+@added Algorithm0 and 3.
+@
+text
+@d2 1
+a2 1
+// $Id: sj-enc.cpp,v 1.1 2011/06/03 02:49:20 oneway Exp oneway $ 
+d4 2
+a5 2
+// EncryptPacket() and DecryptPacket() 
+// functions for performance.
+d55 20
+d87 2
+a178 1
+    //no need:  srand(time(NULL));
+d206 1
+a206 1
+/* oneway's en/decryption algorithm */ 
+a245 41
+/*
+
+int main(int argc, char* argv[])
+{
+    char enc_pack[4096]; 
+    char dec_pack[4096]; 
+
+    int len;
+    for (len = 1; len < 256; ++len) {
+        char* org_pack = (char*)malloc(len);
+
+        for (int i = 0; i < len; ++i) {
+            org_pack[i] = i + '0';
+        }
+
+        int  enc_len;
+        enc_len = EncryptPacket(org_pack, len, enc_pack);
+        int dec_len;
+        dec_len = DecryptPacket(enc_pack, enc_len, dec_pack);
+
+        if (dec_len != len) {
+            printf("len=%d, dec_len=%d\r\n", len, dec_len);
+            break;
+        }
+
+        if (memcmp(org_pack, dec_pack, len)) {
+            printf("Org_pack != dec_pack when len = %d\r\n", len);
+            break;
+        }
+
+        free(org_pack);
+    }
+
+    if (len >= 256) {
+        printf("All test past!\r\n");
+    }
+    getchar();
+    return 0;
+}
+
+*/
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 1
+// $Id$ 
+d12 2
+a13 2
+
+#define OPTION 2
+a20 1
+#if OPTION == 1
+d22 1
+a22 1
+inline void block_encrypt(char* data, int len, char key) {
+d28 1
+a28 1
+inline void block_decrypt(char* data, int len, char key) {
+a33 1
+#else
+d35 1
+a35 1
+inline void block_encrypt(char* data, int len, char key) {
+d45 1
+a45 1
+inline void block_decrypt(char* data, int len, char key) {
+d55 5
+a59 1
+#endif
+d61 7
+a67 1
+int EncryptPacket(char* pack, int len, char* ret) {
+d73 1
+a73 1
+    block_encrypt(ret, len, pad1);
+d79 1
+a79 1
+    block_encrypt(ret, len, pad2);
+d96 1
+a96 1
+int DecryptPacket(char* pack, int len, char* ret) {
+d115 1
+a115 1
+    block_decrypt(ret, len, pad2);
+d120 1
+a120 1
+    block_decrypt(ret, len, pad1);
+d125 100
+@

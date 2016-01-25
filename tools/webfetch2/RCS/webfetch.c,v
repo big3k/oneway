@@ -1,0 +1,336 @@
+head	1.8;
+access;
+symbols;
+locks
+	yudong:1.8; strict;
+comment	@ * @;
+
+
+1.8
+date	2011.02.09.04.43.11;	author yudong;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2011.02.08.04.27.52;	author yudong;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2011.02.08.02.30.24;	author yudong;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2011.02.07.03.11.27;	author yudong;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2011.02.07.00.15.13;	author yudong;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2011.02.06.23.41.38;	author yudong;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2011.02.06.21.38.35;	author yudong;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2011.02.06.21.17.24;	author yudong;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.8
+log
+@*** empty log message ***
+@
+text
+@
+#include <windows.h> 
+#include <process.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <strings.h>
+
+#include <curl/curl.h>
+#include "webfetch.h"
+#include "threads.h"
+
+int main(void)
+{
+
+ HANDLE tid[MAXTHREADS]; 
+ int i, iparm[MAXLINES]; 
+ int j, ti, Nthreads;
+ DWORD exitCode; 
+ WSADATA wsaData;   
+
+ if (WSAStartup(MAKEWORD(2, 0), &wsaData) != 0) {  
+    fprintf(stderr, "WSAStartup() failed");
+    exit(1);
+ }
+ 
+ termEvent = CreateEvent( 
+        NULL,               // default security attributes
+        TRUE,               // manual-reset event
+        FALSE,              // initial state is nonsignaled
+        TEXT("termeEvent")  // object name
+        ); 
+
+ if (termEvent == NULL) { 
+      printf("CreateEvent failed (%d)\n", GetLastError());
+      return;
+ }
+
+ for(;;) { 
+  // get config file 
+  get_config(); 
+  fflush(stdout); 
+
+  ti=0;    // keep track of thread handles 
+  for (i=0; i<Nconfig; i++) { 
+ 
+   iparm[i] = i; 
+   if (strcasecmp(proto[i], "http") == 0 ) { 
+      printf("index=%d: HTTP\n", i); 
+      for (j=0; j<intensity[i]; j++) tid[ti++] = _beginthread(http_proc, 0, iparm+i);      
+       
+   } else if (strcasecmp(proto[i], "tcp") == 0 ) { 
+      printf("index=%d: TCP\n", i); 
+      for (j=0; j<intensity[i]; j++) tid[ti++] = _beginthread(tcp_proc, 0, iparm+i);      
+
+   } else if (strcasecmp(proto[i], "udp") == 0 ) {
+      printf("index=%d: UDP\n", i); 
+      for (j=0; j<intensity[i]; j++) tid[ti++] = _beginthread(udp_proc, 0, iparm+i);      
+
+   } else if (strcasecmp(proto[i], "dns") == 0 ) {
+      printf("index=%d: DNS\n", i); 
+      for (j=0; j<intensity[i]; j++) tid[ti++] = _beginthread(dns_proc, 0, iparm+i);      
+
+   } else { 
+      printf("index=%d: Undefined protocol\n", i); 
+
+   }
+
+  }  // end for 
+
+  Nthreads = ti;
+  printf("----------- %d threads launched---------------\n", Nthreads); 
+  fflush(stdout); 
+
+  Sleep(15000);    
+
+  printf("Now telling the threads to quit ...\n"); 
+  fflush(stdout); 
+  SetEvent(termEvent);   
+
+  for (ti=0; ti<Nthreads; ti++) printf("handle #: %d = %d \n", ti, tid[ti]); 
+
+  exitCode = WaitForMultipleObjects((DWORD)Nthreads, tid, TRUE, INFINITE); 
+
+  switch ( exitCode ) { 
+    // All thread objects were signaled
+    case WAIT_OBJECT_0: 
+            printf("All threads ended, cleaning up for application exit...\n");
+            break;
+
+    default: 
+            printf("WaitForMultipleObjects failed (%d)\n", GetLastError());
+            break; 
+  } 
+  fflush(stdout);
+  // kill the threads, and restart them at next round  
+  for (ti=0; ti<Nthreads; ti++) {
+    if ( tid[ti] != NULL )  CloseHandle(tid[ti]); 
+  }
+
+ ResetEvent(termEvent); 
+ }   // end for(;;). Go back to fetch config, relaunch threads
+
+  return 0;
+}
+
+@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@d19 6
+d74 1
+a74 1
+  Sleep(5000);    
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@d74 3
+a76 1
+  exitCode = WaitForMultipleObjects(Nthreads, tid, TRUE, INFINITE); 
+d86 1
+a86 1
+            return 1;
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d15 1
+a15 1
+ HANDLE tid[MAXLINES]; 
+d17 1
+d37 1
+d43 2
+a44 1
+      tid[i] = _beginthread(http_proc, 0, iparm+i);      
+d47 2
+a48 1
+      tid[i] = _beginthread(tcp_proc, 0, iparm+i);      
+d51 2
+a52 1
+      tid[i] = _beginthread(udp_proc, 0, iparm+i);      
+d55 2
+a56 2
+      tid[i] = _beginthread(dns_proc, 0, iparm+i);      
+      if ( tid[i] == NULL ) printf ("dns_proc failed to launch\n"); 
+d59 1
+a59 1
+      tid[i] = NULL; 
+d64 2
+a65 1
+  printf("-----------All threads launched---------------\n"); 
+d74 1
+a74 1
+  exitCode = WaitForMultipleObjects(Nconfig, tid, TRUE, INFINITE); 
+d88 2
+a89 4
+  for (i=0; i<Nconfig; i++) {
+    if ( tid[i] != NULL ) { 
+     CloseHandle(tid[i]); 
+    }
+d93 1
+a93 1
+ }   // end for(;;)
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d62 1
+a62 1
+  Sleep(10000);    
+d64 2
+a65 1
+  // now telling the threads to quit
+d80 1
+a80 1
+
+d88 1
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d19 12
+d51 1
+a51 1
+      if ( tid[i] == -1 ) printf ("dns_proc failed to launch\n"); 
+d54 1
+a54 1
+      tid[i] = -1; 
+d64 16
+d82 1
+a82 2
+    if ( tid[i] != -1 ) { 
+     TerminateThread(tid[i], 0); 
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d16 7
+a22 1
+ int i; 
+d24 20
+a43 2
+ // get config file 
+ get_config(); 
+d45 1
+a45 1
+ for (i=0; i<Nconfig; i++) { 
+d47 11
+a57 15
+  if (strcasecmp(proto[i], "http") == 0 ) { 
+     printf("index=%d: HTTP\n", i); 
+     tid[i] = _beginthread(http_proc, 0, &i);      
+  } else if (strcasecmp(proto[i], "tcp") == 0 ) { 
+     printf("index=%d: TCP\n", i); 
+     tid[i] = _beginthread(tcp_proc, 0, &i);      
+  } else if (strcasecmp(proto[i], "udp") == 0 ) {
+     printf("index=%d: UDP\n", i); 
+     tid[i] = _beginthread(udp_proc, 0, &i);      
+  } else if (strcasecmp(proto[i], "dns") == 0 ) {
+     printf("index=%d: DNS\n", i); 
+     tid[i] = _beginthread(dns_proc, 0, &i);      
+  } else { 
+     printf("index=%d: Undefined protocol\n", i); 
+     tid[i] = NULL; 
+d60 1
+a60 1
+ }  // end for 
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 1
+a10 10
+
+/* global data for threads to access 
+
+  char proto[MAXLINES][MAXTEXT]; 
+  char ipstr[MAXLINES][MAXTEXT]; 
+  int  port[MAXLINES]; 
+  int  intensity[MAXLINES]; 
+
+*/
+
+d15 1
+d25 1
+d28 1
+d31 1
+d34 1
+d37 1
+@

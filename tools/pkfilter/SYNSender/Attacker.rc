@@ -1,0 +1,255 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 90
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Attacker"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "Attacker Version 1.0",IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright (C) 2001, Komodia Inc.",IDC_STATIC,40,25,119,
+                    8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+    LTEXT           "http://www.komodia.com",IDC_STATIC,40,38,119,8
+    LTEXT           "barak@komodia.com",IDC_STATIC,39,50,119,8
+END
+
+IDD_ATTACKER_DIALOG DIALOGEX 0, 0, 306, 276
+STYLE DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | 
+    WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "SYN Sender"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "IPAddress1",IDC_SOURCEIP,"SysIPAddress32",WS_TABSTOP,80,
+                    18,133,14
+    CONTROL         "Specify manually",IDC_RADIOmanual,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,13,60,106,12
+    CONTROL         "IPAddress1",IDC_DESTIP,"SysIPAddress32",WS_TABSTOP,80,
+                    79,133,14
+    EDITTEXT        IDC_EDIT_numtocheck,80,103,50,14,ES_AUTOHSCROLL
+    CONTROL         "Reverse IP address",IDC_CHECKipreverse,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,137,103,77,14
+    CONTROL         "Import from file",IDC_RADIOfile,"Button",
+                    BS_AUTORADIOBUTTON,13,122,106,12
+    EDITTEXT        IDC_EDIT_filename,80,137,78,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse",IDC_BUTTONbrowse,163,137,50,14
+    EDITTEXT        IDC_EDIT_porttocheck,80,160,133,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_delay,80,181,50,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_ips_per_send,177,180,35,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "Send",IDC_SEND,191,252,50,18
+    PUSHBUTTON      "Quit",IDQuit,248,252,50,18
+    LTEXT           "Source IP:",IDC_sSOURCEIP,13,21,63,9
+    LTEXT           "Num Checked:",IDC_sSOURCEIP2,13,225,56,9
+    LTEXT           "0",IDC_STATIC_ipnum,80,225,93,9
+    LTEXT           "Num to Check:",IDC_sSOURCEIP3,13,105,63,9
+    LTEXT           "Port to check:",IDC_sSOURCEIP4,13,162,63,9
+    GROUPBOX        "Source",IDC_STATIC,7,7,211,31
+    GROUPBOX        "Destination",IDC_STATICradio,7,49,211,152
+    LTEXT           "Start destination IP:",IDC_sSOURCEIP5,13,83,63,9
+    GROUPBOX        "Status",IDC_STATICnumber,7,211,211,30
+    GROUPBOX        "Proxy port",IDC_STATIC,225,7,73,216
+    LTEXT           "HTTP\n80, 3128, 8000, 8001, 8080, 8081\n\nSOCKS4/5\n1080\n\nFTP\n21, 2121\n\nTELNET\n23",
+                    IDC_STATIC,231,19,62,199
+    LTEXT           "Delay:",IDC_sSOURCEIP6,13,183,63,9
+    LTEXT           "File name:",IDC_sSOURCEIP7,13,139,63,9
+    LTEXT           "Port:",IDC_sSOURCEIP8,175,225,16,9
+    LTEXT           "1080",IDC_STATIC_port,194,225,19,9
+    LTEXT           "IPs/send:",IDC_sSOURCEIP9,137,183,35,9
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Attacker MFC Application\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "Attacker\0"
+            VALUE "LegalCopyright", "Copyright (C) 2000\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "Attacker.EXE\0"
+            VALUE "ProductName", "Attacker Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_ATTACKER_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 298
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 270
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About Attacker..."
+    IDP_SOCKETS_INIT_FAILED "Windows sockets initialization failed."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Unknown language: 0xD, 0x1 resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_HEB)
+#ifdef _WIN32
+LANGUAGE 0xD, 0x1
+#pragma code_page(1255)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\Attacker.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "Attacker.ico"
+#endif    // Unknown language: 0xD, 0x1 resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\Attacker.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

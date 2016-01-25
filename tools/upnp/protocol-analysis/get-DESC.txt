@@ -1,0 +1,96 @@
+GET /upnp/e8759cd6-c6fd-d5a7-7280411aaeca7491/desc.xml HTTP/1.1
+HOST: 192.168.1.1:2555
+
+HTTP/1.1 200 OK
+CONTENT-LENGTH: 3326
+CONTENT-TYPE: text/xml; charset="utf-8"
+LAST-MODIFIED: Sun, 09 Jan 2011 20:31:40 GMT
+DATE: Sun, 09 Jan 2011 20:31:40 GMT
+SERVER: OpenRG/4.0.16.1.56.0.10.14.0 UPnP/1.0 Actiontec/RG_VERSION
+CONNECTION: close
+
+<?xml version="1.0"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0">
+<specVersion>
+<major>1</major>
+<minor>0</minor>
+</specVersion>
+<URLBase>http://192.168.1.1:2555</URLBase>
+<device>
+<UDN>uuid:e8759cd6-c6fd-d5a7-7280411aaeca7491</UDN>
+<deviceType>urn:schemas-upnp-org:device:InternetGatewayDevice:1</deviceType>
+<friendlyName>Wireless Broadband Router</friendlyName>
+<manufacturer>Actiontec Electronics INC.</manufacturer>
+<manufacturerURL>http://www.actiontec.com</manufacturerURL>
+<modelDescription>Wireless Broadband Router</modelDescription>
+<modelName>Actiontec_IGD</modelName>
+<modelNumber>4.0.16.1.56.0.10.14.0</modelNumber>
+<modelURL>http://www.actiontec.com</modelURL>
+<serialNumber>000</serialNumber>
+<UPC>999999999001</UPC>
+<presentationURL>http://192.168.1.1:80</presentationURL>
+<serviceList>
+<service>
+<serviceType>urn:schemas-upnp-org:service:Layer3Forwarding:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:Layer3Forwarding1</serviceId>
+<SCPDURL>/upnp/e8759cd6-c6fd-d5a7-7280411aae
+ca7491/Layer3Forwarding1.xml</SCPDURL>
+<controlURL>/upnp/e8759cd6-c6fd-d5a7-7280411aaeca7491/Layer3Forwarding1.ctl</controlURL>
+<eventSubURL>/upnp/e8759cd6-c6fd-d5a7-7280411aaeca7491/Layer3Forwarding1.evt</eventSubURL>
+</service>
+</
+serviceList>
+<deviceList>
+<device>
+<UDN>uuid:25efd7ca-bb01-c7a5-6ddf155746361c26</UDN>
+<deviceType>urn:schemas-upnp-org:device:WANDevice:1</deviceType>
+<friendlyName>External WAN Device</friendlyName>
+<manufacturer>Actiontec Electronics INC.</manufacturer>
+<manufacturerURL></manufacturerURL>
+<modelDescription></modelDescription>
+<modelName>Actiontec_IGD_WAN</modelName>
+<modelNumber></modelNumber>
+<modelURL></modelURL>
+<serialNumber></serialNumber>
+<UPC></UPC>
+<presentationURL>http://192.168.1.1:80</presentationURL>
+<serviceList>
+<service>
+<serviceType>urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:WANCommonIFC1</serviceId>
+<SCPDURL>/upnp/25efd7ca-bb01-c7a5-6ddf155746361c26/WANCommonIFC1.xml</SCPDURL>
+<controlURL>/upnp/25efd7ca-bb01-c7a5-6ddf155746361c26/WANCommonIFC1.ctl</controlURL>
+<eventSubURL>/upnp/25efd7ca-bb01-c7a5-6ddf155746361c26/WANCommonIFC1.evt</eventSubURL>
+</service>
+</serviceList>
+<deviceList>
+<device>
+<UDN>uuid:2
+571e2c7-abca-aef7-7ee13cfcb39ac07f</UDN>
+<deviceType>urn:schemas-upnp-org:device:WANConnectionDevice:1</deviceType>
+<friendlyName>Wireless Broadband Router</friendlyName>
+<manufacturer>Actiontec Electronics INC.</manufacturer>
+<manu
+facturerURL></manufacturerURL>
+<modelDescription>Wireless Broadband Router</modelDescription>
+<modelName>Actiontec_IGD_WANConnection</modelName>
+<modelNumber></modelNumber>
+<modelURL></modelURL>
+<serialNumber></serialNumber>
+<UPC></UPC>
+<presentationURL>http://192.168.1.1:80</presentationURL>
+<serviceList>
+<service>
+<serviceType>urn:schemas-upnp-org:service:WANIPConnection:1</serviceType>
+<serviceId>urn:upnp-org:serviceId:WANIPConn1</serviceId>
+<SCPDURL>/upnp/2571e2c7-abca-aef7-7ee13cfcb39ac07f/WANIPConn1.xml</SCPDURL>
+<controlURL>/upnp/2571e2c7-abca-aef7-7ee13cfcb39ac07f/WANIPConn1.ctl</controlURL>
+<eventSubURL>/upnp/2571e2c7-abca-aef7-7ee13cfcb39ac07f/WANIPConn1.evt</eventSubURL>
+</service>
+</serviceList>
+</device>
+</deviceList>
+</device>
+</deviceList>
+</device>
+</root>

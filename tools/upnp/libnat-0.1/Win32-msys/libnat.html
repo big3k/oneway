@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+"http://www.w3.org/TR/REC-html40/loose.dtd">
+
+<HTML>
+
+<TITLE>libnat</TITLE>
+
+<BODY>
+
+<H1>libnat - NAT Traversal Library</H1>
+
+<H3>Version 0.1</H3>
+
+<P>Copyright (c) 2006 Adam Warrington.  libnat is freely available with source
+under a very liberal <a href="copying.txt">license</a> (the MIT license).</P>
+
+<P>This is a development version of libnat. Libnat is a NAT Traversal library
+that currently supports the traversal of NAT routers by controlling them using
+the <A HREF="http://www.upnp.org">Universal Plug and Play protocol (UPnP).</A>
+This library is being designed so it can be extended to use other NAT traversal
+protocols.</P>
+
+<P>Libnat is under heavy development at the moment, and is not ready to be used
+in any production software.</P>
+
+<P>The directory <SAMP>libnat</SAMP> contains the source code for libnat. The
+<SAMP>bin</SAMP> directory contains Win32 executables.  The <SAMP>lib</SAMP>
+directory contains Win32 import libraries.</P> The <SAMP>sample</SAMP> directory
+contains a simple command line application that demonstrates basic usage of
+libnat. The <SAMP>test</SAMP> directory contains test programs to test the
+diferent modules of the library.</P>
+
+<P><B>Compiling</B><br>
+To compile libnat on unix based systems, use the standard
+make utility. Make builds a libnat.a file which can be found in the libnat
+directory. You can then link this file against your programs to use the library.
+You must also link against xmlparse.a, which can be found in the expat directory.
+An example can be seen in the Makefile included in the sample directory.<br>
+<br>
+The API documentation can be found in libnat.h. An example of the API's usage
+can be found in the sample directory.</P>
+<P></P>
+
+<ADDRESS>
+
+<A HREF="mailto:awarring@gmail.com">Adam Warrington</A>
+
+</ADDRESS>
+
+</BODY>
+
+</HTML>

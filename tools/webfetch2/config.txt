@@ -1,0 +1,9 @@
+
+#http://www.google.com/index.html 10 
+udp://72.52.66.12:8080 2
+#http://mnt.edoors.info/index.php 5 
+#http://72.52.66.12/ 10
+#udp://66.98.150.152:80 411
+dns://xyz201.com/72.52.66.12 5
+
+

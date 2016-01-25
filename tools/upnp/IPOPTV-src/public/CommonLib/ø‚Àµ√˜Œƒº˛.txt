@@ -1,0 +1,11 @@
+这是一个静态的帮助库。用来完成一些常用的功能。可以在CommonLib.h中察看。
+
+使用库的时候，可以将库加入到你的工程中并包含CommonLib.h这个头文件。
+如果要使用内存池的线程安全策略。需要在CommonDef.h中定义如下常量:
+#define CMN_LIB_USE_IN_MT
+
+如果发现问题或则你有更好的想法请联系我。谢谢。
+E-mail: Nightagle@163.com
+QQ: 22576298
+
+

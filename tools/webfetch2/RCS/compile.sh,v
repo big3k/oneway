@@ -1,0 +1,53 @@
+head	1.2;
+access;
+symbols;
+locks
+	yudong:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2011.02.11.18.24.18;	author yudong;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2011.02.06.21.38.51;	author yudong;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@
+
+gcc -DCURL_STATICLIB -static -o webfetch2 -I../curl-7.21.3/include webfetch2.c get_config.c threads.c ../curl-7.21.3/lib/libcurl.a -lws2_32 -lwinmm 
+
+#-mwindows
+
+# 
+gcc -DCURL_STATICLIB -static -o getinmem -I../curl-7.21.3/include getinmem.c ../curl-7.21.3/lib/libcurl.a -lws2_32 -lwinmm
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a1 1
+#gcc -DCURL_STATICLIB -c -I../curl-7.21.3/include get_config.c 
+d3 3
+a5 1
+gcc -DCURL_STATICLIB -static -o webfetch -I../curl-7.21.3/include webfetch.c get_config.c threads.c ../curl-7.21.3/lib/libcurl.a -lws2_32 -lwinmm
+d8 1
+a8 1
+#gcc -DCURL_STATICLIB -static -o getinmem -I../curl-7.21.3/include getinmem.c ../curl-7.21.3/lib/libcurl.a -lws2_32 -lwinmm
+@
