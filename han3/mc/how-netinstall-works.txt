@@ -1,0 +1,33 @@
+
+      How Netinstall Works
+      --------------------
+9/25/2008
+
+1. Server: runs dhcp server, to listen to dhcp broadcast from client. 
+   Assigns IP address to client according to its MAC addr pre-captured.
+
+   DHCP server's config entry: 
+
+  next-server 38.105.86.22;
+        filename "pxelinux.0";
+
+  tells client to download "pxelinux.0" from tftp server 38.105.86.22. 
+
+
+2. Client: BIOS configured to do PXE boot. 
+   -> starts up
+   -> broadcasts dhcp requests
+   -> gets response
+   -> configures networking
+   -> downloads "pxelinux.0" via tftp
+
+3. Client: 
+   -> loads and execute boot loader "pxelinux.0" 
+   -> via tftp, search for boot config file under "pxelinux.cfg/"
+      using its own IP address in upper case hexadecimal. 
+   -> downloads kickstart file from the entry: 
+      ks=http://38.105.86.22/ks/ks.cfg.se.php?dir=centos4.6&disk=s
+      in the config file. 
+
+4. Client: installs OS according to ks file. 
+
